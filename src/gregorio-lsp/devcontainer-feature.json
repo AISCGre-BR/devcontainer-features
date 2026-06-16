@@ -1,6 +1,6 @@
 {
     "id": "gregorio-lsp",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "name": "Gregorio LSP",
     "description": "Installs gregorio-lsp language server (with grelint and grefmt) from source on Debian/Ubuntu, Red Hat/Fedora, or Alpine based systems.",
     "documentationURL": "https://github.com/AISCGre-BR/devcontainer-features",
