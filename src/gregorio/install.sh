@@ -253,12 +253,12 @@ install_gregorio() {
     echo "Installing Gregorio build dependencies..."
     if is_debian_like; then
         update_pkg_index
-        install_build_deps cmake gcc g++ make python3 fontforge pkg-config
+        install_build_deps autoconf automake libtool gcc make python3 fontforge pkg-config
     elif is_redhat_like; then
-        install_build_deps cmake gcc gcc-c++ make python3 fontforge pkgconf
+        install_build_deps autoconf automake libtool gcc make python3 fontforge pkgconf
     elif is_alpine; then
         update_pkg_index
-        install_build_deps cmake gcc g++ make python3 fontforge pkgconfig
+        install_build_deps autoconf automake libtool gcc make python3 fontforge pkgconfig
     fi
 
     echo "Downloading Gregorio ${display_ref} from ${tarball_url}..."
@@ -268,19 +268,17 @@ install_gregorio() {
     mkdir -p "${src_dir}"
     tar -xzf "${BUILD_DIR}/gregorio.tar.gz" --strip-components=1 -C "${src_dir}"
 
-    local build_dir="${BUILD_DIR}/gregorio-build"
-    mkdir -p "${build_dir}"
-
-    echo "Configuring Gregorio..."
-    cmake -S "${src_dir}" -B "${build_dir}" \
-        -DCMAKE_BUILD_TYPE=Release \
-        -DCMAKE_INSTALL_PREFIX=/usr/local
-
-    echo "Building Gregorio..."
-    cmake --build "${build_dir}" --parallel "$(nproc)"
-
-    echo "Installing Gregorio..."
-    cmake --install "${build_dir}"
+    (
+        cd "${src_dir}"
+        echo "Generating autotools build files..."
+        autoreconf -fi
+        echo "Configuring Gregorio..."
+        ./configure --prefix=/usr/local
+        echo "Building Gregorio..."
+        make -j"$(nproc)"
+        echo "Installing Gregorio..."
+        make install
+    )
 
     # Refresh the TeX filename database so TEXMFLOCAL files are found.
     if command -v texhash &>/dev/null; then
