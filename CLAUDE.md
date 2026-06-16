@@ -54,6 +54,16 @@ All features support Debian/Ubuntu, Red Hat/Fedora, and Alpine Linux base images
 └── README.md
 ```
 
+## `devcontainer-features-install.sh` (all features)
+
+All four features ship a custom `devcontainer-features-install.sh` entrypoint instead of relying on the auto-generated one from `devcontainers/action@v1`.
+
+**Why:** Some devcontainer implementations (confirmed: Zed/podman) generate `devcontainer-features.env` without quoting option values. Sourcing an unquoted file directly causes space-separated values (e.g. `PACKAGES=babel-latin babel-portuges ...`) to be split by the shell: the first word becomes a variable-assignment prefix and the rest is executed as a command, failing with exit 127.
+
+**How it works:** The script reads `devcontainer-features.env` line-by-line with `IFS= read -r`, extracts `KEY` and full `VALUE` (preserving spaces) for each `KEY=value` line, and calls `export "${KEY}=${VALUE}"` — nothing is executed as a command. It then calls `./install.sh`.
+
+The devcontainer spec explicitly supports this: *"A Feature MAY include a `devcontainer-features-install.sh` that serves as an entrypoint."* When present, `devcontainers/action@v1` packages it as-is instead of generating a default one.
+
 ## Shared install script structure
 
 All four `install.sh` scripts share the same skeleton:
