@@ -175,32 +175,31 @@ construct_repo_url() {
 }
 
 # ---------------------------------------------------------------------------
-# Tarball URL construction (tag-based or HEAD)
+# Tarball URL construction — ref is passed as-is (branch, tag, commit, or empty for HEAD).
 # ---------------------------------------------------------------------------
-# tag: specific tag (e.g. "v1.0.0"); empty string means HEAD of default branch.
 construct_tarball_url() {
     local host="$1"
     local repo="$2"
-    local tag="$3"
+    local ref="$3"
 
     case "${host}" in
         github)
-            if [ -z "${tag}" ]; then
+            if [ -z "${ref}" ]; then
                 echo "https://github.com/${repo}/archive/HEAD.tar.gz"
             else
-                echo "https://github.com/${repo}/archive/refs/tags/${tag}.tar.gz"
+                echo "https://github.com/${repo}/archive/${ref}.tar.gz"
             fi
             ;;
         gitlab)
             local repo_name="${repo##*/}"
-            local ref="${tag:-HEAD}"
-            echo "https://gitlab.com/${repo}/-/archive/${ref}/${repo_name}-${ref}.tar.gz"
+            local git_ref="${ref:-HEAD}"
+            echo "https://gitlab.com/${repo}/-/archive/${git_ref}/${repo_name}-${git_ref}.tar.gz"
             ;;
         codeberg)
-            echo "https://codeberg.org/${repo}/archive/${tag:-HEAD}.tar.gz"
+            echo "https://codeberg.org/${repo}/archive/${ref:-HEAD}.tar.gz"
             ;;
         bitbucket)
-            echo "https://bitbucket.org/${repo}/get/${tag:-HEAD}.tar.gz"
+            echo "https://bitbucket.org/${repo}/get/${ref:-HEAD}.tar.gz"
             ;;
         *)
             echo "Unsupported host: ${host}" >&2
@@ -222,15 +221,6 @@ resolve_github_latest() {
         | sed 's/.*"tag_name"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/'
 }
 
-# Ensure version has a leading 'v' for GitHub tag lookup.
-normalize_tag() {
-    local version="$1"
-    case "${version}" in
-        v*) echo "${version}" ;;
-        *)  echo "v${version}" ;;
-    esac
-}
-
 # ---------------------------------------------------------------------------
 # Install tree-sitter-gregorio grammar from source
 # ---------------------------------------------------------------------------
@@ -242,9 +232,8 @@ install_tree_sitter_gregorio() {
 
     # Resolve the ref and tarball URL.
     # Empty ref  → HEAD of the default branch.
-    # "latest"   → latest release tag from the forge API.
-    # anything else → treat as a tag directly.
-    local tag=""
+    # "latest"   → latest release tag resolved via the forge API.
+    # Anything else → used as-is (branch name, tag name, or commit hash).
     local display_ref
 
     if [ -z "${ref}" ]; then
@@ -253,15 +242,13 @@ install_tree_sitter_gregorio() {
         echo "Resolving latest tree-sitter-gregorio release..."
         ref="$(resolve_github_latest "${repo_url}")"
         echo "  -> ${ref}"
-        tag="$(normalize_tag "${ref}")"
-        display_ref="${tag}"
+        display_ref="${ref}"
     else
-        tag="$(normalize_tag "${ref}")"
-        display_ref="${tag}"
+        display_ref="${ref}"
     fi
 
     local tarball_url
-    tarball_url="$(construct_tarball_url "${HOST}" "${REPOSITORY}" "${tag}")"
+    tarball_url="$(construct_tarball_url "${HOST}" "${REPOSITORY}" "${ref}")"
 
     echo "Installing tree-sitter-gregorio build dependencies..."
     if is_debian_like; then
