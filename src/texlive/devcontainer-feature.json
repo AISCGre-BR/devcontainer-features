@@ -1,6 +1,6 @@
 {
     "id": "texlive",
-    "version": "1.0.0",
+    "version": "2.0.0",
     "name": "TeX Live",
     "description": "Installs TeX Live on Debian/Ubuntu, Red Hat/Fedora, or Alpine based systems via the official TUG installer.",
     "documentationURL": "https://github.com/AISCGre-BR/devcontainer-features",
