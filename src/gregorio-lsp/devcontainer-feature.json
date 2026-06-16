@@ -1,0 +1,28 @@
+{
+    "id": "gregorio-lsp",
+    "version": "1.0.0",
+    "name": "Gregorio LSP",
+    "description": "Installs gregorio-lsp language server (with grelint and grefmt) from source on Debian/Ubuntu, Red Hat/Fedora, or Alpine based systems.",
+    "documentationURL": "https://github.com/AISCGre-BR/devcontainer-features",
+    "licenseURL": "https://github.com/AISCGre-BR/devcontainer-features/blob/main/LICENSE",
+    "keywords": ["gregorio", "lsp", "grelint", "grefmt", "language-server"],
+    "options": {
+        "host": {
+            "type": "string",
+            "default": "github",
+            "description": "Repository host platform (e.g. 'github', 'gitlab', 'codeberg', 'bitbucket'). Used to construct the repository URL.",
+            "proposals": ["github", "gitlab", "codeberg", "bitbucket"]
+        },
+        "repository": {
+            "type": "string",
+            "default": "aiscgre-br/gregorio-lsp",
+            "description": "Repository in OWNER/REPO format (e.g. 'aiscgre-br/gregorio-lsp'). Used together with host to construct the full repository URL."
+        },
+        "ref": {
+            "type": "string",
+            "default": "",
+            "description": "Git reference (commit hash, tag, or branch name) to check out. Leave empty to skip installation and use the repository's default branch.",
+            "proposals": ["", "latest", "v0.9.4", "main"]
+        }
+    }
+}

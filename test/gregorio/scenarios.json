@@ -2,36 +2,37 @@
     "scenarios": [
         {
             "id": "gregorio_bundled",
-            "description": "No options set — use the Gregorio version bundled with TeX Live",
+            "description": "No ref specified — use the Gregorio version bundled with TeX Live",
             "options": {}
         },
         {
-            "id": "gregorio_specific_version",
+            "id": "gregorio_specific_tag",
             "description": "Build and install a specific Gregorio version from source",
             "options": {
-                "gregorio_version": "6.2.0"
+                "ref": "v6.2.0"
             }
         },
         {
             "id": "gregorio_latest",
             "description": "Build and install the latest Gregorio version from source",
             "options": {
-                "gregorio_version": "latest"
+                "ref": "latest"
             }
         },
         {
-            "id": "gregorio_lsp_latest",
-            "description": "Install latest gregorio-lsp (server, grelint, grefmt)",
+            "id": "gregorio_with_custom_host",
+            "description": "Install Gregorio from a custom host (e.g. GitLab)",
             "options": {
-                "gregorio_lsp_version": "latest"
+                "ref": "latest",
+                "host": "gitlab",
+                "repository": "gregorio-project/gregorio"
             }
         },
         {
-            "id": "gregorio_all_latest",
-            "description": "Install latest Gregorio from source and latest gregorio-lsp",
+            "id": "gregorio_with_branch",
+            "description": "Install Gregorio from a specific branch",
             "options": {
-                "gregorio_version": "latest",
-                "gregorio_lsp_version": "latest"
+                "ref": "main"
             }
         }
     ]

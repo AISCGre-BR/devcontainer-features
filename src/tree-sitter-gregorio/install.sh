@@ -2,7 +2,7 @@
 set -euo pipefail
 
 HOST="${HOST:-github}"
-REPOSITORY="${REPOSITORY:-gregorio-project/gregorio}"
+REPOSITORY="${REPOSITORY:-gregorio-project/tree-sitter-gregorio}"
 REF="${REF:-}"
 
 BUILD_DIR="$(mktemp -d)"
@@ -181,9 +181,9 @@ normalize_tag() {
 }
 
 # ---------------------------------------------------------------------------
-# Install Gregorio from source
+# Install tree-sitter-gregorio grammar from source
 # ---------------------------------------------------------------------------
-install_gregorio() {
+install_tree_sitter_gregorio() {
     local ref="${REF}"
 
     # Build the repository URL from host and repo
@@ -192,7 +192,7 @@ install_gregorio() {
 
     # If ref is "latest", resolve to the latest release tag
     if [ "${ref}" = "latest" ]; then
-        echo "Resolving latest Gregorio release..."
+        echo "Resolving latest tree-sitter-gregorio release..."
         ref="$(resolve_github_latest "${repo_url}")"
         echo "  -> ${ref}"
     fi
@@ -200,49 +200,61 @@ install_gregorio() {
     local tag
     tag="$(normalize_tag "${ref}")"
 
-    echo "Installing Gregorio build dependencies..."
+    echo "Installing tree-sitter-gregorio build dependencies..."
     if is_debian_like; then
         update_pkg_index
-        install_build_deps cmake gcc g++ make python3 fontforge pkg-config
+        install_build_deps build-essential gcc g++ make tree-sitter-cli pkg-config
     elif is_redhat_like; then
-        install_build_deps cmake gcc gcc-c++ make python3 fontforge pkgconf
+        install_build_deps gcc gcc-c++ make tree-sitter pkgconf
     elif is_alpine; then
         update_pkg_index
-        install_build_deps cmake gcc g++ make python3 fontforge pkgconfig
+        install_build_deps build-base gcc g++ make tree-sitter pkgconfig
     fi
 
     local tarball_url="${repo_url}/archive/refs/tags/${tag}.tar.gz"
-    echo "Downloading Gregorio ${tag} from ${tarball_url}..."
-    curl -sSfL "${tarball_url}" -o "${BUILD_DIR}/gregorio.tar.gz"
+    echo "Downloading tree-sitter-gregorio ${tag} from ${tarball_url}..."
+    curl -sSfL "${tarball_url}" -o "${BUILD_DIR}/tree-sitter-gregorio.tar.gz"
 
-    local src_dir="${BUILD_DIR}/gregorio-src"
+    local src_dir="${BUILD_DIR}/tree-sitter-gregorio-src"
     mkdir -p "${src_dir}"
-    tar -xzf "${BUILD_DIR}/gregorio.tar.gz" --strip-components=1 -C "${src_dir}"
+    tar -xzf "${BUILD_DIR}/tree-sitter-gregorio.tar.gz" --strip-components=1 -C "${src_dir}"
 
-    local build_dir="${BUILD_DIR}/gregorio-build"
-    mkdir -p "${build_dir}"
+    echo "Building tree-sitter-gregorio grammar..."
+    (
+        cd "${src_dir}"
+        if [ -f Makefile ]; then
+            make
+        elif [ -f build.sh ]; then
+            bash build.sh
+        elif [ -f package.json ]; then
+            # If it's an npm project, try to use npm
+            if command -v npm &>/dev/null; then
+                npm install
+                npm run build || true
+            fi
+        fi
+    )
 
-    echo "Configuring Gregorio..."
-    cmake -S "${src_dir}" -B "${build_dir}" \
-        -DCMAKE_BUILD_TYPE=Release \
-        -DCMAKE_INSTALL_PREFIX=/usr/local
+    echo "Installing tree-sitter-gregorio grammar..."
+    # Tree-sitter grammars are typically installed in ~/.local/share/tree-sitter/grammars
+    # or in /usr/local/lib/tree-sitter/grammars
+    local grammar_dir="/usr/local/lib/tree-sitter/grammars"
+    mkdir -p "${grammar_dir}"
 
-    echo "Building Gregorio..."
-    cmake --build "${build_dir}" --parallel "$(nproc)"
-
-    echo "Installing Gregorio..."
-    cmake --install "${build_dir}"
-
-    # Refresh the TeX filename database so TEXMFLOCAL files are found.
-    if command -v texhash &>/dev/null; then
-        texhash
-    elif command -v mktexlsr &>/dev/null; then
-        mktexlsr
+    # Copy compiled grammar library if it exists
+    if [ -f "${src_dir}/build/Release/tree-sitter-gregorio.so" ]; then
+        install -m 0755 "${src_dir}/build/Release/tree-sitter-gregorio.so" "${grammar_dir}/gregorio.so"
+        echo "Installed grammar library to ${grammar_dir}/gregorio.so"
+    elif [ -f "${src_dir}/build/tree-sitter-gregorio.so" ]; then
+        install -m 0755 "${src_dir}/build/tree-sitter-gregorio.so" "${grammar_dir}/gregorio.so"
+        echo "Installed grammar library to ${grammar_dir}/gregorio.so"
+    else
+        echo "WARNING: compiled grammar library not found" >&2
     fi
 
-    echo "Gregorio ${tag} installed."
+    echo "tree-sitter-gregorio ${tag} installed."
 
-    echo "Removing Gregorio build dependencies..."
+    echo "Removing tree-sitter-gregorio build dependencies..."
     remove_build_deps
 }
 
@@ -251,12 +263,12 @@ install_gregorio() {
 # ---------------------------------------------------------------------------
 main() {
     if [ -n "${REF}" ]; then
-        install_gregorio
+        install_tree_sitter_gregorio
     else
-        echo "No ref specified; the version bundled with TeX Live will be used."
+        echo "No ref specified; skipping tree-sitter-gregorio installation."
     fi
 
-    echo "Gregorio feature installation complete."
+    echo "Tree-sitter Gregorio feature installation complete."
 }
 
 main

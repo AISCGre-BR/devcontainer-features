@@ -1,28 +1,28 @@
 {
     "id": "gregorio",
-    "version": "1.0.0",
+    "version": "2.0.0",
     "name": "Gregorio",
-    "description": "Installs Gregorio (Gregorian chant score engraver) from source and optionally the gregorio-lsp language server (with grelint and grefmt) on Debian/Ubuntu, Red Hat/Fedora, or Alpine based systems.",
+    "description": "Installs Gregorio (Gregorian chant score engraver) from source on Debian/Ubuntu, Red Hat/Fedora, or Alpine based systems.",
     "documentationURL": "https://github.com/AISCGre-BR/devcontainer-features",
     "licenseURL": "https://github.com/AISCGre-BR/devcontainer-features/blob/main/LICENSE",
-    "keywords": ["gregorio", "gregorian", "chant", "gabc", "liturgy", "lsp", "grelint", "grefmt"],
+    "keywords": ["gregorio", "gregorian", "chant", "gabc", "liturgy"],
     "options": {
-        "gregorio_version": {
+        "host": {
+            "type": "string",
+            "default": "github",
+            "description": "Repository host platform (e.g. 'github', 'gitlab', 'codeberg', 'bitbucket'). Used to construct the repository URL.",
+            "proposals": ["github", "gitlab", "codeberg", "bitbucket"]
+        },
+        "repository": {
+            "type": "string",
+            "default": "gregorio-project/gregorio",
+            "description": "Repository in OWNER/REPO format (e.g. 'gregorio-project/gregorio'). Used together with host to construct the full repository URL."
+        },
+        "ref": {
             "type": "string",
             "default": "",
-            "description": "Version of Gregorio to build and install from source (e.g. 'latest', '6.2.0'). Takes priority over the version bundled with TeX Live. Leave empty to use the version already included in TeX Live without any source build.",
-            "proposals": ["", "latest", "6.2.0"]
-        },
-        "gregorio_repository": {
-            "type": "string",
-            "default": "https://github.com/gregorio-project/gregorio",
-            "description": "GitHub repository URL for the Gregorio project used when gregorio_version is non-empty."
-        },
-        "gregorio_lsp_version": {
-            "type": "string",
-            "default": "",
-            "description": "Version of gregorio-lsp to build and install from source (e.g. 'latest', 'v0.9.4'). Installs the gregorio-lsp language server together with the grelint and grefmt binaries. Leave empty to skip installation.",
-            "proposals": ["", "latest", "v0.9.4"]
+            "description": "Git reference (commit hash, tag, or branch name) to check out. Leave empty to use the repository's default branch and skip installation.",
+            "proposals": ["", "latest", "v6.2.0", "main"]
         }
     },
     "installsAfter": [

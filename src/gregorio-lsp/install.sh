@@ -2,7 +2,7 @@
 set -euo pipefail
 
 HOST="${HOST:-github}"
-REPOSITORY="${REPOSITORY:-gregorio-project/gregorio}"
+REPOSITORY="${REPOSITORY:-aiscgre-br/gregorio-lsp}"
 REF="${REF:-}"
 
 BUILD_DIR="$(mktemp -d)"
@@ -181,9 +181,9 @@ normalize_tag() {
 }
 
 # ---------------------------------------------------------------------------
-# Install Gregorio from source
+# Install gregorio-lsp (and grelint, grefmt) from source
 # ---------------------------------------------------------------------------
-install_gregorio() {
+install_gregorio_lsp() {
     local ref="${REF}"
 
     # Build the repository URL from host and repo
@@ -192,7 +192,7 @@ install_gregorio() {
 
     # If ref is "latest", resolve to the latest release tag
     if [ "${ref}" = "latest" ]; then
-        echo "Resolving latest Gregorio release..."
+        echo "Resolving latest gregorio-lsp release..."
         ref="$(resolve_github_latest "${repo_url}")"
         echo "  -> ${ref}"
     fi
@@ -200,49 +200,49 @@ install_gregorio() {
     local tag
     tag="$(normalize_tag "${ref}")"
 
-    echo "Installing Gregorio build dependencies..."
+    echo "Installing Rust build toolchain..."
     if is_debian_like; then
         update_pkg_index
-        install_build_deps cmake gcc g++ make python3 fontforge pkg-config
+        install_build_deps rustc cargo gcc pkg-config
     elif is_redhat_like; then
-        install_build_deps cmake gcc gcc-c++ make python3 fontforge pkgconf
+        install_build_deps rust cargo gcc pkgconf
     elif is_alpine; then
         update_pkg_index
-        install_build_deps cmake gcc g++ make python3 fontforge pkgconfig
+        install_build_deps rust cargo gcc musl-dev pkgconfig
     fi
 
     local tarball_url="${repo_url}/archive/refs/tags/${tag}.tar.gz"
-    echo "Downloading Gregorio ${tag} from ${tarball_url}..."
-    curl -sSfL "${tarball_url}" -o "${BUILD_DIR}/gregorio.tar.gz"
+    echo "Downloading gregorio-lsp ${tag} from ${tarball_url}..."
+    curl -sSfL "${tarball_url}" -o "${BUILD_DIR}/gregorio-lsp.tar.gz"
 
-    local src_dir="${BUILD_DIR}/gregorio-src"
+    local src_dir="${BUILD_DIR}/gregorio-lsp-src"
     mkdir -p "${src_dir}"
-    tar -xzf "${BUILD_DIR}/gregorio.tar.gz" --strip-components=1 -C "${src_dir}"
+    tar -xzf "${BUILD_DIR}/gregorio-lsp.tar.gz" --strip-components=1 -C "${src_dir}"
 
-    local build_dir="${BUILD_DIR}/gregorio-build"
-    mkdir -p "${build_dir}"
+    echo "Building gregorio-lsp, grelint, grefmt..."
+    # Redirect Cargo's home and cache into the temp build dir so nothing
+    # leaks into the container's home directory.
+    export CARGO_HOME="${BUILD_DIR}/cargo-home"
+    export CARGO_TARGET_DIR="${BUILD_DIR}/cargo-target"
 
-    echo "Configuring Gregorio..."
-    cmake -S "${src_dir}" -B "${build_dir}" \
-        -DCMAKE_BUILD_TYPE=Release \
-        -DCMAKE_INSTALL_PREFIX=/usr/local
+    (
+        cd "${src_dir}"
+        cargo build --release --locked 2>/dev/null \
+            || cargo build --release
+    )
 
-    echo "Building Gregorio..."
-    cmake --build "${build_dir}" --parallel "$(nproc)"
+    echo "Installing gregorio-lsp binaries to /usr/local/bin..."
+    for bin in gregorio-lsp grelint grefmt; do
+        if [ -f "${CARGO_TARGET_DIR}/release/${bin}" ]; then
+            install -m 0755 "${CARGO_TARGET_DIR}/release/${bin}" "/usr/local/bin/${bin}"
+        else
+            echo "WARNING: expected binary not found: ${bin}" >&2
+        fi
+    done
 
-    echo "Installing Gregorio..."
-    cmake --install "${build_dir}"
+    echo "gregorio-lsp ${tag} installed."
 
-    # Refresh the TeX filename database so TEXMFLOCAL files are found.
-    if command -v texhash &>/dev/null; then
-        texhash
-    elif command -v mktexlsr &>/dev/null; then
-        mktexlsr
-    fi
-
-    echo "Gregorio ${tag} installed."
-
-    echo "Removing Gregorio build dependencies..."
+    echo "Removing Rust build toolchain..."
     remove_build_deps
 }
 
@@ -251,12 +251,12 @@ install_gregorio() {
 # ---------------------------------------------------------------------------
 main() {
     if [ -n "${REF}" ]; then
-        install_gregorio
+        install_gregorio_lsp
     else
-        echo "No ref specified; the version bundled with TeX Live will be used."
+        echo "No ref specified; skipping gregorio-lsp installation."
     fi
 
-    echo "Gregorio feature installation complete."
+    echo "Gregorio LSP feature installation complete."
 }
 
 main
