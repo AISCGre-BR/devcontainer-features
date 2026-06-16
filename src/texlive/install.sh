@@ -215,7 +215,6 @@ tlpdbopt_sys_bin /usr/local/bin
 tlpdbopt_sys_info /usr/local/share/info
 tlpdbopt_sys_man /usr/local/share/man
 EOF
-    echo "repository ${repo_url}" >> "${INSTALL_TL_DIR}/texlive.profile"
 }
 
 # ---------------------------------------------------------------------------
