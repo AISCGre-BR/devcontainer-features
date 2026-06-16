@@ -21,7 +21,7 @@
         "ref": {
             "type": "string",
             "default": "",
-            "description": "Git reference (commit hash, tag, or branch name) to check out. Leave empty to skip installation and use the repository's default branch.",
+            "description": "Git reference (tag or branch name) to build from. Leave empty to build from the HEAD of the repository's default branch.",
             "proposals": ["", "latest", "v1.0.0", "main"]
         }
     }

@@ -1,10 +1,26 @@
-#!/usr/bin/env bash
-set -euo pipefail
-
+#!/bin/sh
+# bash is required for array-based Perl module tracking.
+# Alpine's /bin/sh (busybox ash) lacks bash arrays, so bootstrap bash first.
 SCHEME="${SCHEME:-full}"
 PACKAGES="${PACKAGES:-}"
 RELEASE="${RELEASE:-latest}"
 MIRROR="${MIRROR:-}"
+
+if [ -z "${BASH_VERSION:-}" ]; then
+    if ! command -v bash >/dev/null 2>&1; then
+        if command -v apk >/dev/null 2>&1; then
+            echo "Installing bash (required for build)..."
+            apk add --no-cache bash
+        else
+            echo "ERROR: bash is required but not found." >&2
+            exit 1
+        fi
+    fi
+    exec bash "$0" "$@"
+fi
+
+# ---- bash only below this line ----
+set -euo pipefail
 
 INSTALL_TL_DIR="$(mktemp -d)"
 TEXLIVE_PREFIX="/usr/local/texlive"
