@@ -1,18 +1,20 @@
 #!/bin/sh
-# Alpine's /bin/sh (busybox ash) does not support bash arrays. Handle the
-# REF-empty early-exit path with plain sh, then re-exec with bash for the
-# actual source build.
+# bash is required for array-based build-dep tracking.
+# Alpine's /bin/sh (busybox ash) lacks bash arrays, so bootstrap bash first.
 HOST="${HOST:-github}"
 REPOSITORY="${REPOSITORY:-aiscgre-br/gregorio-lsp}"
 REF="${REF:-}"
 
-if [ -z "${REF}" ]; then
-    echo "No ref specified; skipping gregorio-lsp installation."
-    echo "Gregorio LSP feature installation complete."
-    exit 0
-fi
-
 if [ -z "${BASH_VERSION:-}" ]; then
+    if ! command -v bash >/dev/null 2>&1; then
+        if command -v apk >/dev/null 2>&1; then
+            echo "Installing bash (required for build)..."
+            apk add --no-cache bash
+        else
+            echo "ERROR: bash is required but not found." >&2
+            exit 1
+        fi
+    fi
     exec bash "$0" "$@"
 fi
 
@@ -173,6 +175,41 @@ construct_repo_url() {
 }
 
 # ---------------------------------------------------------------------------
+# Tarball URL construction (tag-based or HEAD)
+# ---------------------------------------------------------------------------
+# tag: specific tag (e.g. "v0.9.4"); empty string means HEAD of default branch.
+construct_tarball_url() {
+    local host="$1"
+    local repo="$2"
+    local tag="$3"
+
+    case "${host}" in
+        github)
+            if [ -z "${tag}" ]; then
+                echo "https://github.com/${repo}/archive/HEAD.tar.gz"
+            else
+                echo "https://github.com/${repo}/archive/refs/tags/${tag}.tar.gz"
+            fi
+            ;;
+        gitlab)
+            local repo_name="${repo##*/}"
+            local ref="${tag:-HEAD}"
+            echo "https://gitlab.com/${repo}/-/archive/${ref}/${repo_name}-${ref}.tar.gz"
+            ;;
+        codeberg)
+            echo "https://codeberg.org/${repo}/archive/${tag:-HEAD}.tar.gz"
+            ;;
+        bitbucket)
+            echo "https://bitbucket.org/${repo}/get/${tag:-HEAD}.tar.gz"
+            ;;
+        *)
+            echo "Unsupported host: ${host}" >&2
+            exit 1
+            ;;
+    esac
+}
+
+# ---------------------------------------------------------------------------
 # GitHub helpers
 # ---------------------------------------------------------------------------
 resolve_github_latest() {
@@ -200,19 +237,31 @@ normalize_tag() {
 install_gregorio_lsp() {
     local ref="${REF}"
 
-    # Build the repository URL from host and repo
     local repo_url
     repo_url="$(construct_repo_url "${HOST}" "${REPOSITORY}")"
 
-    # If ref is "latest", resolve to the latest release tag
-    if [ "${ref}" = "latest" ]; then
+    # Resolve the ref and tarball URL.
+    # Empty ref  → HEAD of the default branch.
+    # "latest"   → latest release tag from the forge API.
+    # anything else → treat as a tag/branch/commit directly.
+    local tag=""
+    local display_ref
+
+    if [ -z "${ref}" ]; then
+        display_ref="HEAD"
+    elif [ "${ref}" = "latest" ]; then
         echo "Resolving latest gregorio-lsp release..."
         ref="$(resolve_github_latest "${repo_url}")"
         echo "  -> ${ref}"
+        tag="$(normalize_tag "${ref}")"
+        display_ref="${tag}"
+    else
+        tag="$(normalize_tag "${ref}")"
+        display_ref="${tag}"
     fi
 
-    local tag
-    tag="$(normalize_tag "${ref}")"
+    local tarball_url
+    tarball_url="$(construct_tarball_url "${HOST}" "${REPOSITORY}" "${tag}")"
 
     echo "Installing Rust build toolchain..."
     if is_debian_like; then
@@ -225,8 +274,7 @@ install_gregorio_lsp() {
         install_build_deps rust cargo gcc musl-dev pkgconfig
     fi
 
-    local tarball_url="${repo_url}/archive/refs/tags/${tag}.tar.gz"
-    echo "Downloading gregorio-lsp ${tag} from ${tarball_url}..."
+    echo "Downloading gregorio-lsp ${display_ref} from ${tarball_url}..."
     curl -sSfL "${tarball_url}" -o "${BUILD_DIR}/gregorio-lsp.tar.gz"
 
     local src_dir="${BUILD_DIR}/gregorio-lsp-src"
@@ -254,7 +302,7 @@ install_gregorio_lsp() {
         fi
     done
 
-    echo "gregorio-lsp ${tag} installed."
+    echo "gregorio-lsp ${display_ref} installed."
 
     echo "Removing Rust build toolchain..."
     remove_build_deps
