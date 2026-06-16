@@ -2,7 +2,9 @@
 # bash is required for array-based Perl module tracking.
 # Alpine's /bin/sh (busybox ash) lacks bash arrays, so bootstrap bash first.
 SCHEME="${SCHEME:-full}"
-PACKAGES="${PACKAGES:-}"
+# Accept comma-separated packages (preferred: avoids shell word-splitting in
+# unquoted devcontainer-features.env) as well as the legacy space-separated form.
+PACKAGES="$(printf '%s' "${PACKAGES:-}" | tr ',' ' ')"
 RELEASE="${RELEASE:-latest}"
 MIRROR="${MIRROR:-}"
 

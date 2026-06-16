@@ -1,6 +1,6 @@
 {
     "id": "texlive",
-    "version": "2.0.2",
+    "version": "2.0.3",
     "name": "TeX Live",
     "description": "Installs TeX Live on Debian/Ubuntu, Red Hat/Fedora, or Alpine based systems via the official TUG installer.",
     "documentationURL": "https://github.com/AISCGre-BR/devcontainer-features",
@@ -28,7 +28,12 @@
         "packages": {
             "type": "string",
             "default": "",
-            "description": "Space-separated list of additional TeX Live packages to install after the base scheme (e.g. 'latexmk biber')."
+            "description": "Comma-separated list of additional TeX Live packages to install after the base scheme (e.g. 'latexmk,biber'). Commas are preferred over spaces to avoid shell word-splitting bugs in some devcontainer implementations. Space-separated values are also accepted.",
+            "proposals": [
+                "",
+                "latexmk,biber",
+                "latexmk,latexindent,microtype"
+            ]
         },
         "release": {
             "type": "string",
