@@ -2,33 +2,74 @@
 
 ## Project overview
 
-This repository provides a [Dev Container Feature](https://containers.dev/implementors/features/) that installs **TeX Live** using the official TUG network installer (`install-tl`). The feature supports Debian/Ubuntu, Red Hat/Fedora, and Alpine Linux base images.
+This repository provides four [Dev Container Features](https://containers.dev/implementors/features/):
+
+| Feature | Description | Build system |
+|---------|-------------|--------------|
+| `texlive` | Installs TeX Live via the official TUG network installer | Shell (`install-tl`) |
+| `gregorio` | Builds and installs Gregorio (Gregorian chant engraver) from source | **Autotools** (`autoreconf` + `./configure` + `make`) |
+| `gregorio-lsp` | Builds and installs the Gregorio language server (`gregorio-lsp`, `grelint`, `grefmt`) from source | **Cargo** (`cargo build --release`) |
+| `tree-sitter-gregorio` | Builds and installs the tree-sitter-gregorio grammar from source | **Make** / npm (grammar-dependent) |
+
+All features support Debian/Ubuntu, Red Hat/Fedora, and Alpine Linux base images.
 
 ## Repository layout
 
 ```
 .
 ├── src/
-│   └── texlive/
-│       ├── devcontainer-feature.json   # Feature metadata and option declarations
-│       ├── install.sh                  # Installation script (runs as root inside the container)
-│       └── README.md                  # Feature-level documentation
+│   ├── texlive/
+│   │   ├── devcontainer-feature.json
+│   │   ├── install.sh
+│   │   └── README.md
+│   ├── gregorio/
+│   │   ├── devcontainer-feature.json
+│   │   ├── install.sh
+│   │   └── README.md
+│   ├── gregorio-lsp/
+│   │   ├── devcontainer-feature.json
+│   │   ├── install.sh
+│   │   └── README.md
+│   └── tree-sitter-gregorio/
+│       ├── devcontainer-feature.json
+│       ├── install.sh
+│       └── README.md
 ├── test/
-│   └── texlive/
-│       ├── scenarios.json              # Test matrix (option combinations to exercise)
-│       └── test.sh                    # Smoke tests using dev-container-features-test-lib
+│   ├── texlive/
+│   │   ├── scenarios.json
+│   │   └── test.sh
+│   ├── gregorio/
+│   │   ├── scenarios.json
+│   │   └── test.sh
+│   ├── gregorio-lsp/
+│   │   └── scenarios.json
+│   └── tree-sitter-gregorio/
+│       └── scenarios.json
 ├── .github/
 │   └── workflows/
-│       ├── test.yml                    # CI: runs feature tests on push/PR
-│       └── release.yml                 # CD: publishes to GHCR on tag push
-├── CLAUDE.md                           # This file
+│       ├── test.yml        # CI: runs feature tests on push/PR
+│       └── release.yml     # CD: publishes all features to GHCR on tag push
+├── CLAUDE.md
 ├── LICENSE
 └── README.md
 ```
 
-## Feature options
+## Shared install script structure
 
-Declared in `src/texlive/devcontainer-feature.json` and consumed as environment variables inside `install.sh` (uppercased, e.g. `SCHEME`, `PACKAGES`, `RELEASE`, `MIRROR`).
+All four `install.sh` scripts share the same skeleton:
+
+1. **sh bootstrap** — the shebang is `#!/bin/sh`; if bash is not available (Alpine), it installs it and re-execs itself under bash, because bash arrays are used for `_BUILD_PKGS_TO_REMOVE`.
+2. **OS detection** — reads `/etc/os-release`; identifies Debian-like, Red Hat-like, or Alpine via `is_debian_like()`, `is_redhat_like()`, `is_alpine()`.
+3. **Package manager helpers** — `pkg_install`, `pkg_remove`, `update_pkg_index`, `is_pkg_installed`, `install_build_deps`, `remove_build_deps`.
+4. **URL construction** — `construct_repo_url` and `construct_tarball_url` build forge URLs from `$HOST` and `$REPOSITORY`. Supported hosts: `github`, `gitlab`, `codeberg`, `bitbucket`.
+5. **`ref` resolution** — empty `$REF` → `HEAD`; `"latest"` → resolved via forge API; anything else → passed as-is to the archive endpoint (branch name, tag name, or commit hash — no normalization).
+6. **Download** — fetches a source tarball into `$BUILD_DIR` (cleaned on EXIT trap).
+7. **Build and install** — feature-specific (see sections below).
+8. **Cleanup** — `remove_build_deps` removes packages that were not present before the build.
+
+## `texlive` feature
+
+**Options** (`src/texlive/devcontainer-feature.json`):
 
 | Option | Env var | Default | Notes |
 |--------|---------|---------|-------|
@@ -37,21 +78,22 @@ Declared in `src/texlive/devcontainer-feature.json` and consumed as environment 
 | `release` | `$RELEASE` | `latest` | `latest` → CTAN mirror; year → TUG historic |
 | `mirror` | `$MIRROR` | `""` | Overrides URL construction when non-empty |
 
-## Install script logic (`src/texlive/install.sh`)
+**Install logic** (`src/texlive/install.sh`):
 
-1. **OS detection** — reads `/etc/os-release`; identifies Debian-like, Red Hat-like, or Alpine.
-2. **Prerequisites** — installs `wget`, `curl`, `fontconfig`, `perl`, and all Perl modules needed by `latexindent` using the native package manager.
-3. **URL resolution** — builds the installer URL and tlnet repo URL from `$RELEASE` and `$MIRROR`.
-4. **Download** — fetches `install-tl-unx.tar.gz` to a temp directory (cleaned up on exit).
-5. **Profile generation** — writes a non-interactive profile (`texlive.profile`) under `$TEXLIVE_PREFIX/<release>/`.
-6. **Installation** — runs `install-tl --profile --location --no-interaction`.
-7. **PATH setup** — symlinks every binary from the arch-specific bin dir into `/usr/local/bin`; creates stable symlinks for man/info pages.
-8. **Extra packages** — if `$PACKAGES` is non-empty, calls `tlmgr install`.
-9. **Perl validation** — checks each required module with `perl -M<mod> -e 1`; installs missing ones via `cpanm`.
+1. Installs `wget`, `curl`, `fontconfig`, `perl`, and all Perl modules needed by `latexindent`.
+2. Builds the installer URL and tlnet repo URL from `$RELEASE` and `$MIRROR`.
+3. Fetches `install-tl-unx.tar.gz` to a temp directory.
+4. Writes a non-interactive profile (`texlive.profile`) and runs `install-tl`.
+5. Symlinks every binary from the arch-specific bin dir into `/usr/local/bin`.
+6. If `$PACKAGES` is non-empty, calls `tlmgr install`.
+7. Validates Perl modules with `perl -M<mod> -e 1`; installs missing ones via `cpanm`.
+
+**Key constraints:**
+- `install-tl` creates a versioned directory (e.g. `2026`) inside `$TEXLIVE_PREFIX`. When `$RELEASE=latest`, the script discovers the actual directory with `find` after installation.
+- The `PATH` is set via `containerEnv` in `devcontainer-feature.json`; symlinks in `/usr/local/bin` are the preferred mechanism.
+- Historical releases are immutable on TUG servers; `tlmgr update` is not expected to work for them.
 
 ### `latexindent` Perl dependencies
-
-`latexindent` ships with TeX Live but requires several Perl modules that are not bundled:
 
 | Module | Debian package | RPM package | Alpine package |
 |--------|---------------|-------------|----------------|
@@ -63,14 +105,74 @@ Declared in `src/texlive/devcontainer-feature.json` and consumed as environment 
 | `File::Which` | `libfile-which-perl` | `perl-File-Which` | `perl-file-which` |
 | `Sub::Identify` | `libsub-identify-perl` | `perl-Sub-Identify` | `perl-sub-identify` |
 
-If any module is missing after the native package install, the script falls back to `cpanm`.
+## `gregorio` feature
+
+**Build system: Autotools** (`configure.ac` + `Makefile.am`). The repository does **not** use CMake.
+
+**Build dependencies:**
+
+| | Debian | RPM | Alpine |
+|-|--------|-----|--------|
+| autoconf | `autoconf` | `autoconf` | `autoconf` |
+| automake | `automake` | `automake` | `automake` |
+| libtool | `libtool` | `libtool` | `libtool` |
+| C compiler | `gcc` | `gcc` | `gcc` |
+| make | `make` | `make` | `make` |
+| Python 3 | `python3` | `python3` | `python3` |
+| FontForge | `fontforge` | `fontforge` | `fontforge` |
+| pkg-config | `pkg-config` | `pkgconf` | `pkgconfig` |
+
+**Build sequence** (inside a subshell in `src_dir`):
+
+```sh
+autoreconf -fi          # generate ./configure from configure.ac
+./configure --prefix=/usr/local
+make -j$(nproc)
+make install
+```
+
+After installation, `texhash` (or `mktexlsr`) is called to refresh the TeX filename database so `TEXMFLOCAL` files are found.
+
+**`installsAfter`:** this feature declares `ghcr.io/aiscgre-br/devcontainer-features/texlive` so Gregorio is installed after TeX Live.
+
+## `gregorio-lsp` feature
+
+**Build system: Cargo** (Rust). Produces three binaries: `gregorio-lsp`, `grelint`, `grefmt`.
+
+**Build dependencies:** `rust`, `cargo`, `gcc`, `pkg-config` (plus `musl-dev` on Alpine).
+
+**Build sequence:**
+
+```sh
+export CARGO_HOME="${BUILD_DIR}/cargo-home"
+export CARGO_TARGET_DIR="${BUILD_DIR}/cargo-target"
+cargo build --release --locked   # falls back to cargo build --release if Cargo.lock is absent
+```
+
+Binaries are copied from `$CARGO_TARGET_DIR/release/` to `/usr/local/bin/`. Cargo's home and target directories are redirected into `$BUILD_DIR` so nothing leaks into the container's home directory.
+
+## `tree-sitter-gregorio` feature
+
+**Build system:** determined at runtime — the script tries, in order: `Makefile` → `build.sh` → `package.json` (npm). Compiled grammar (`.so`) is installed to `/usr/local/lib/tree-sitter/grammars/gregorio.so`.
+
+## `ref` option (all source-built features)
+
+All three source-built features (`gregorio`, `gregorio-lsp`, `tree-sitter-gregorio`) share the same `ref` option and resolution logic:
+
+| Value | Behaviour |
+|-------|-----------|
+| `""` (empty) | Downloads `HEAD` of the repository's default branch |
+| `"latest"` | Resolves the latest release tag via the forge API, then downloads that ref |
+| Any other string | Passed as-is to the forge archive endpoint — can be a branch name, a tag name (exact, including any `v` prefix), or a commit hash |
+
+> **Note:** the script does not normalize or guess ref types. If the upstream tag is `v6.2.0`, the user must pass `v6.2.0`, not `6.2.0`.
 
 ## Adding a new OS family
 
-1. Add a new `is_<family>()` function in `install.sh`.
-2. Extend `pkg_install`, `update_pkg_index`, and `install_prerequisites` with the new branch.
-3. Add the native Perl package names for that distro to the table above.
-4. Test with `devcontainer features test --features texlive --base-image <image>`.
+1. Add a new `is_<family>()` detection function in each `install.sh`.
+2. Extend `pkg_install`, `pkg_remove`, `update_pkg_index`, and `is_pkg_installed` with the new branch.
+3. Add build-dependency package names for that distro to the relevant tables above.
+4. Test with `devcontainer features test --features <feature> --base-image <image> .`.
 
 ## Running tests locally
 
@@ -78,7 +180,7 @@ Requires the [Dev Container CLI](https://github.com/devcontainers/cli) and Docke
 
 ```bash
 devcontainer features test \
-    --features texlive \
+    --features gregorio \
     --base-image mcr.microsoft.com/devcontainers/base:ubuntu \
     .
 ```
@@ -95,14 +197,9 @@ devcontainer features test \
 
 ## Publishing a new release
 
-1. Bump `version` in `src/texlive/devcontainer-feature.json`.
+1. Bump `version` in the relevant `src/<feature>/devcontainer-feature.json` file(s).
 2. Commit and push to `main`.
-3. Create and push a Git tag: `git tag v1.x.y && git push origin v1.x.y`.
-4. The `release.yml` workflow publishes the feature to `ghcr.io/aiscgre-br/devcontainer-features/texlive`.
+3. Create and push a Git tag: `git tag vX.Y.Z && git push origin vX.Y.Z`.
+4. The `release.yml` workflow triggers on `v*` tags and publishes **all** features to GHCR using the `version` field in each `devcontainer-feature.json`.
 
-## Key constraints and gotchas
-
-- The installer is downloaded fresh each time; caching is intentionally omitted to keep the feature stateless and simple.
-- `install-tl` creates a versioned directory (e.g. `2026`) inside `$TEXLIVE_PREFIX`. When `$RELEASE=latest`, the script discovers the actual directory with `find` after installation.
-- The `PATH` is not modified in shell profiles because devcontainer Features run as root and the container's `PATH` is set via the `containerEnv` field in `devcontainer-feature.json`. Symlinks in `/usr/local/bin` are the preferred mechanism.
-- Historical releases are immutable on TUG servers; `tlmgr update` is not expected to work for them.
+The repo-level tag tracks the highest feature version across a release batch. Only features whose `version` field changed will be re-published by the `devcontainers/action`.
