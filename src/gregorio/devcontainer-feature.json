@@ -1,17 +1,28 @@
 {
     "id": "gregorio",
-    "version": "2.0.0",
+    "version": "2.0.1",
     "name": "Gregorio",
     "description": "Installs Gregorio (Gregorian chant score engraver) from source on Debian/Ubuntu, Red Hat/Fedora, or Alpine based systems.",
     "documentationURL": "https://github.com/AISCGre-BR/devcontainer-features",
     "licenseURL": "https://github.com/AISCGre-BR/devcontainer-features/blob/main/LICENSE",
-    "keywords": ["gregorio", "gregorian", "chant", "gabc", "liturgy"],
+    "keywords": [
+        "gregorio",
+        "gregorian",
+        "chant",
+        "gabc",
+        "liturgy"
+    ],
     "options": {
         "host": {
             "type": "string",
             "default": "github",
             "description": "Repository host platform (e.g. 'github', 'gitlab', 'codeberg', 'bitbucket'). Used to construct the repository URL.",
-            "proposals": ["github", "gitlab", "codeberg", "bitbucket"]
+            "proposals": [
+                "github",
+                "gitlab",
+                "codeberg",
+                "bitbucket"
+            ]
         },
         "repository": {
             "type": "string",
@@ -22,7 +33,12 @@
             "type": "string",
             "default": "",
             "description": "Git reference (tag or branch name) to build from. Leave empty to build from the HEAD of the repository's default branch.",
-            "proposals": ["", "latest", "v6.2.0", "main"]
+            "proposals": [
+                "",
+                "latest",
+                "v6.2.0",
+                "main"
+            ]
         }
     },
     "installsAfter": [

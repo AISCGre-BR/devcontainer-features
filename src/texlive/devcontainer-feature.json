@@ -1,17 +1,29 @@
 {
     "id": "texlive",
-    "version": "2.0.0",
+    "version": "2.0.1",
     "name": "TeX Live",
     "description": "Installs TeX Live on Debian/Ubuntu, Red Hat/Fedora, or Alpine based systems via the official TUG installer.",
     "documentationURL": "https://github.com/AISCGre-BR/devcontainer-features",
     "licenseURL": "https://github.com/AISCGre-BR/devcontainer-features/blob/main/LICENSE",
-    "keywords": ["tex", "latex", "texlive", "typesetting"],
+    "keywords": [
+        "tex",
+        "latex",
+        "texlive",
+        "typesetting"
+    ],
     "options": {
         "scheme": {
             "type": "string",
             "default": "full",
             "description": "TeX Live scheme to install.",
-            "proposals": ["full", "medium", "small", "basic", "minimal", "infraonly"]
+            "proposals": [
+                "full",
+                "medium",
+                "small",
+                "basic",
+                "minimal",
+                "infraonly"
+            ]
         },
         "packages": {
             "type": "string",
@@ -22,7 +34,21 @@
             "type": "string",
             "default": "latest",
             "description": "TeX Live release year to install (e.g. '2026', '2025', '2024') or 'latest' for the current release.",
-            "proposals": ["latest", "2026", "2025", "2024", "2023", "2022", "2021", "2020", "2019", "2018", "2017", "2016", "2015"]
+            "proposals": [
+                "latest",
+                "2026",
+                "2025",
+                "2024",
+                "2023",
+                "2022",
+                "2021",
+                "2020",
+                "2019",
+                "2018",
+                "2017",
+                "2016",
+                "2015"
+            ]
         },
         "mirror": {
             "type": "string",
