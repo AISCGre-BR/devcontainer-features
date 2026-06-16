@@ -1,0 +1,38 @@
+{
+    "id": "texlive",
+    "version": "1.0.0",
+    "name": "TeX Live",
+    "description": "Installs TeX Live on Debian/Ubuntu, Red Hat/Fedora, or Alpine based systems via the official TUG installer.",
+    "documentationURL": "https://github.com/AISCGre-BR/devcontainer-features-texlive",
+    "licenseURL": "https://github.com/AISCGre-BR/devcontainer-features-texlive/blob/main/LICENSE",
+    "keywords": ["tex", "latex", "texlive", "typesetting"],
+    "options": {
+        "scheme": {
+            "type": "string",
+            "default": "full",
+            "description": "TeX Live scheme to install.",
+            "proposals": ["full", "medium", "small", "basic", "minimal", "infraonly"]
+        },
+        "packages": {
+            "type": "string",
+            "default": "",
+            "description": "Space-separated list of additional TeX Live packages to install after the base scheme (e.g. 'latexmk biber')."
+        },
+        "release": {
+            "type": "string",
+            "default": "latest",
+            "description": "TeX Live release year to install (e.g. '2026', '2025', '2024') or 'latest' for the current release.",
+            "proposals": ["latest", "2026", "2025", "2024", "2023", "2022", "2021", "2020", "2019", "2018", "2017", "2016", "2015"]
+        },
+        "mirror": {
+            "type": "string",
+            "default": "",
+            "description": "Custom TeX Live mirror URL pointing to a tlnet directory (e.g. 'https://mirror.example.com/ctan/systems/texlive/tlnet'). Overrides the automatic mirror selection."
+        }
+    },
+    "installsAfter": [],
+    "containerEnv": {
+        "MANPATH": "/usr/local/texlive/bin/man:${MANPATH}",
+        "INFOPATH": "/usr/local/texlive/bin/info:${INFOPATH}"
+    }
+}

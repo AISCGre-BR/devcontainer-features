@@ -1,0 +1,26 @@
+name: Release Features
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      packages: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Publish Features
+        uses: devcontainers/action@v1
+        with:
+          publish-features: true
+          oci-registry: ghcr.io
+          features-namespace: aiscgre-br/devcontainer-features-texlive
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
