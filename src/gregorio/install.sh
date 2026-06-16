@@ -253,12 +253,12 @@ install_gregorio() {
     echo "Installing Gregorio build dependencies..."
     if is_debian_like; then
         update_pkg_index
-        install_build_deps autoconf automake libtool gcc make python3 fontforge pkg-config
+        install_build_deps autoconf automake libtool gcc make flex bison python3 fontforge pkg-config
     elif is_redhat_like; then
-        install_build_deps autoconf automake libtool gcc make python3 fontforge pkgconf
+        install_build_deps autoconf automake libtool gcc make flex bison python3 fontforge pkgconf
     elif is_alpine; then
         update_pkg_index
-        install_build_deps autoconf automake libtool gcc make python3 fontforge pkgconfig
+        install_build_deps autoconf automake libtool gcc make flex bison python3 fontforge pkgconfig
     fi
 
     echo "Downloading Gregorio ${display_ref} from ${tarball_url}..."
@@ -273,7 +273,9 @@ install_gregorio() {
         echo "Generating autotools build files..."
         autoreconf -fi
         echo "Configuring Gregorio..."
-        ./configure --prefix=/usr/local
+        # Run with bash explicitly: Gregorio's configure uses CFLAGS+= (bash-ism)
+        # which breaks under busybox ash (/bin/sh on Alpine).
+        bash ./configure --prefix=/usr/local
         echo "Building Gregorio..."
         make -j"$(nproc)"
         echo "Installing Gregorio..."
