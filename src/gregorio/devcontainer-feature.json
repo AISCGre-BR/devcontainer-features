@@ -42,6 +42,7 @@
         }
     },
     "installsAfter": [
+        "ghcr.io/devcontainers/features/common-utils",
         "ghcr.io/aiscgre-br/devcontainer-features/texlive"
     ]
 }

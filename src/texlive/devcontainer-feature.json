@@ -61,7 +61,9 @@
             "description": "Custom TeX Live mirror base URL (e.g. 'https://mirror.example.com'). The path '/CTAN/systems/texlive/tlnet' will be appended automatically. Overrides the automatic mirror selection."
         }
     },
-    "installsAfter": [],
+    "installsAfter": [
+        "ghcr.io/devcontainers/features/common-utils"
+    ],
     "containerEnv": {
         "MANPATH": "/usr/local/texlive/bin/man:${MANPATH}",
         "INFOPATH": "/usr/local/texlive/bin/info:${INFOPATH}"

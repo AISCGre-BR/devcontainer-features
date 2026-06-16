@@ -24,5 +24,8 @@
             "description": "Git reference (branch name, tag name, or commit hash) to build from. The value is passed as-is to the forge archive endpoint. Leave empty to build from the HEAD of the repository's default branch.",
             "proposals": ["", "latest", "v0.9.4", "main"]
         }
-    }
+    },
+    "installsAfter": [
+        "ghcr.io/devcontainers/features/common-utils"
+    ]
 }
