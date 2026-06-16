@@ -31,4 +31,5 @@ jobs:
         uses: devcontainers/action@v1
         with:
           features-namespace: aiscgre-br/devcontainer-features
+          base-path-to-features: ./src
           test-features: true

@@ -22,5 +22,6 @@ jobs:
           publish-features: true
           oci-registry: ghcr.io
           features-namespace: aiscgre-br/devcontainer-features
+          base-path-to-features: ./src
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
