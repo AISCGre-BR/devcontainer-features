@@ -3,8 +3,8 @@
     "version": "1.0.0",
     "name": "TeX Live",
     "description": "Installs TeX Live on Debian/Ubuntu, Red Hat/Fedora, or Alpine based systems via the official TUG installer.",
-    "documentationURL": "https://github.com/AISCGre-BR/devcontainer-features-texlive",
-    "licenseURL": "https://github.com/AISCGre-BR/devcontainer-features-texlive/blob/main/LICENSE",
+    "documentationURL": "https://github.com/AISCGre-BR/devcontainer-features",
+    "licenseURL": "https://github.com/AISCGre-BR/devcontainer-features/blob/main/LICENSE",
     "keywords": ["tex", "latex", "texlive", "typesetting"],
     "options": {
         "scheme": {

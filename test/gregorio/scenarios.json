@@ -1,0 +1,38 @@
+{
+    "scenarios": [
+        {
+            "id": "gregorio_bundled",
+            "description": "No options set — use the Gregorio version bundled with TeX Live",
+            "options": {}
+        },
+        {
+            "id": "gregorio_specific_version",
+            "description": "Build and install a specific Gregorio version from source",
+            "options": {
+                "gregorio_version": "6.2.0"
+            }
+        },
+        {
+            "id": "gregorio_latest",
+            "description": "Build and install the latest Gregorio version from source",
+            "options": {
+                "gregorio_version": "latest"
+            }
+        },
+        {
+            "id": "gregorio_lsp_latest",
+            "description": "Install latest gregorio-lsp (server, grelint, grefmt)",
+            "options": {
+                "gregorio_lsp_version": "latest"
+            }
+        },
+        {
+            "id": "gregorio_all_latest",
+            "description": "Install latest Gregorio from source and latest gregorio-lsp",
+            "options": {
+                "gregorio_version": "latest",
+                "gregorio_lsp_version": "latest"
+            }
+        }
+    ]
+}

@@ -1,4 +1,4 @@
-# CLAUDE.md — devcontainer-features-texlive
+# CLAUDE.md — devcontainer-features
 
 ## Project overview
 
@@ -98,7 +98,7 @@ devcontainer features test \
 1. Bump `version` in `src/texlive/devcontainer-feature.json`.
 2. Commit and push to `main`.
 3. Create and push a Git tag: `git tag v1.x.y && git push origin v1.x.y`.
-4. The `release.yml` workflow publishes the feature to `ghcr.io/aiscgre-br/devcontainer-features-texlive/texlive`.
+4. The `release.yml` workflow publishes the feature to `ghcr.io/aiscgre-br/devcontainer-features/texlive`.
 
 ## Key constraints and gotchas
 

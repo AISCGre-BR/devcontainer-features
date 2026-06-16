@@ -1,0 +1,31 @@
+{
+    "id": "gregorio",
+    "version": "1.0.0",
+    "name": "Gregorio",
+    "description": "Installs Gregorio (Gregorian chant score engraver) from source and optionally the gregorio-lsp language server (with grelint and grefmt) on Debian/Ubuntu, Red Hat/Fedora, or Alpine based systems.",
+    "documentationURL": "https://github.com/AISCGre-BR/devcontainer-features",
+    "licenseURL": "https://github.com/AISCGre-BR/devcontainer-features/blob/main/LICENSE",
+    "keywords": ["gregorio", "gregorian", "chant", "gabc", "liturgy", "lsp", "grelint", "grefmt"],
+    "options": {
+        "gregorio_version": {
+            "type": "string",
+            "default": "",
+            "description": "Version of Gregorio to build and install from source (e.g. 'latest', '6.2.0'). Takes priority over the version bundled with TeX Live. Leave empty to use the version already included in TeX Live without any source build.",
+            "proposals": ["", "latest", "6.2.0"]
+        },
+        "gregorio_repository": {
+            "type": "string",
+            "default": "https://github.com/gregorio-project/gregorio",
+            "description": "GitHub repository URL for the Gregorio project used when gregorio_version is non-empty."
+        },
+        "gregorio_lsp_version": {
+            "type": "string",
+            "default": "",
+            "description": "Version of gregorio-lsp to build and install from source (e.g. 'latest', 'v0.9.4'). Installs the gregorio-lsp language server together with the grelint and grefmt binaries. Leave empty to skip installation.",
+            "proposals": ["", "latest", "v0.9.4"]
+        }
+    },
+    "installsAfter": [
+        "ghcr.io/aiscgre-br/devcontainer-features/texlive"
+    ]
+}

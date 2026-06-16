@@ -1,12 +1,13 @@
-# devcontainer-features-texlive
+# devcontainer-features
 
-[Dev Container Features](https://containers.dev/implementors/features/) for installing [TeX Live](https://www.tug.org/texlive/) in Debian/Ubuntu, Red Hat/Fedora, and Alpine based dev containers.
+[Dev Container Features](https://containers.dev/implementors/features/) for Debian/Ubuntu, Red Hat/Fedora, and Alpine based dev containers.
 
 ## Features
 
 | Feature | Description |
 |---------|-------------|
 | [`texlive`](src/texlive/README.md) | Installs TeX Live via the official TUG network installer |
+| [`gregorio`](src/gregorio/README.md) | Installs Gregorio (Gregorian chant engraver) and optionally gregorio-lsp |
 
 ## Usage
 
@@ -16,7 +17,7 @@ Add the feature to your `devcontainer.json`:
 {
     "image": "mcr.microsoft.com/devcontainers/base:ubuntu",
     "features": {
-        "ghcr.io/aiscgre-br/devcontainer-features-texlive/texlive:1": {}
+        "ghcr.io/aiscgre-br/devcontainer-features/texlive:1": {}
     }
 }
 ```
@@ -36,7 +37,7 @@ Add the feature to your `devcontainer.json`:
 ```jsonc
 {
     "features": {
-        "ghcr.io/aiscgre-br/devcontainer-features-texlive/texlive:1": {}
+        "ghcr.io/aiscgre-br/devcontainer-features/texlive:1": {}
     }
 }
 ```
@@ -45,7 +46,7 @@ Add the feature to your `devcontainer.json`:
 ```jsonc
 {
     "features": {
-        "ghcr.io/aiscgre-br/devcontainer-features-texlive/texlive:1": {
+        "ghcr.io/aiscgre-br/devcontainer-features/texlive:1": {
             "scheme": "basic",
             "packages": "latexmk biber csquotes"
         }
@@ -57,7 +58,7 @@ Add the feature to your `devcontainer.json`:
 ```jsonc
 {
     "features": {
-        "ghcr.io/aiscgre-br/devcontainer-features-texlive/texlive:1": {
+        "ghcr.io/aiscgre-br/devcontainer-features/texlive:1": {
             "release": "2024",
             "mirror": "https://mirrors.rit.edu/CTAN/systems/texlive/tlnet"
         }

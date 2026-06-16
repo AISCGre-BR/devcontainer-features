@@ -21,6 +21,6 @@ jobs:
         with:
           publish-features: true
           oci-registry: ghcr.io
-          features-namespace: aiscgre-br/devcontainer-features-texlive
+          features-namespace: aiscgre-br/devcontainer-features
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
