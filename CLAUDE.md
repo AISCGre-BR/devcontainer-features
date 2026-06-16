@@ -4,12 +4,12 @@
 
 This repository provides four [Dev Container Features](https://containers.dev/implementors/features/):
 
-| Feature | Description | Build system |
-|---------|-------------|--------------|
-| `texlive` | Installs TeX Live via the official TUG network installer | Shell (`install-tl`) |
-| `gregorio` | Builds and installs Gregorio (Gregorian chant engraver) from source | **Autotools** (`autoreconf` + `./configure` + `make`) |
-| `gregorio-lsp` | Builds and installs the Gregorio language server (`gregorio-lsp`, `grelint`, `grefmt`) from source | **Cargo** (`cargo build --release`) |
-| `tree-sitter-gregorio` | Builds and installs the tree-sitter-gregorio grammar from source | **Make** / npm (grammar-dependent) |
+| Feature | Version | Description | Build system |
+|---------|---------|-------------|--------------|
+| `texlive` | 2.0.1 | Installs TeX Live via the official TUG network installer | Shell (`install-tl`) |
+| `gregorio` | 2.0.4 | Builds and installs Gregorio (Gregorian chant engraver) from source | **Autotools** (`autoreconf` + `./configure` + `make`) |
+| `gregorio-lsp` | 1.0.3 | Builds and installs the Gregorio language server (`gregorio-lsp`, `grelint`, `grefmt`) from source | **Cargo** (`cargo build --release`) |
+| `tree-sitter-gregorio` | 1.0.2 | Builds and installs the tree-sitter-gregorio grammar from source | **Make** / npm (grammar-dependent) |
 
 All features support Debian/Ubuntu, Red Hat/Fedora, and Alpine Linux base images.
 
