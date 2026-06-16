@@ -1,9 +1,23 @@
-#!/usr/bin/env bash
-set -euo pipefail
-
+#!/bin/sh
+# Alpine's /bin/sh (busybox ash) does not support bash arrays. Handle the
+# REF-empty early-exit path with plain sh, then re-exec with bash for the
+# actual source build.
 HOST="${HOST:-github}"
 REPOSITORY="${REPOSITORY:-aiscgre-br/gregorio-lsp}"
 REF="${REF:-}"
+
+if [ -z "${REF}" ]; then
+    echo "No ref specified; skipping gregorio-lsp installation."
+    echo "Gregorio LSP feature installation complete."
+    exit 0
+fi
+
+if [ -z "${BASH_VERSION:-}" ]; then
+    exec bash "$0" "$@"
+fi
+
+# ---- bash only below this line ----
+set -euo pipefail
 
 BUILD_DIR="$(mktemp -d)"
 _BUILD_PKGS_TO_REMOVE=()
@@ -250,12 +264,7 @@ install_gregorio_lsp() {
 # Main
 # ---------------------------------------------------------------------------
 main() {
-    if [ -n "${REF}" ]; then
-        install_gregorio_lsp
-    else
-        echo "No ref specified; skipping gregorio-lsp installation."
-    fi
-
+    install_gregorio_lsp
     echo "Gregorio LSP feature installation complete."
 }
 
