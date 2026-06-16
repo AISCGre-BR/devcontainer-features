@@ -118,15 +118,19 @@ All four `install.sh` scripts share the same skeleton:
 | libtool | `libtool` | `libtool` | `libtool` |
 | C compiler | `gcc` | `gcc` | `gcc` |
 | make | `make` | `make` | `make` |
+| lexer generator | `flex` | `flex` | `flex` |
+| parser generator | `bison` | `bison` | `bison` |
 | Python 3 | `python3` | `python3` | `python3` |
 | FontForge | `fontforge` | `fontforge` | `fontforge` |
 | pkg-config | `pkg-config` | `pkgconf` | `pkgconfig` |
 
+`flex` and `bison` are required to generate the lexer/parser C sources (`gabc-notes-determination`, `gabc-score-determination`, `vowel-rules`) from the `.l`/`.y` files in the repository.
+
 **Build sequence** (inside a subshell in `src_dir`):
 
 ```sh
-autoreconf -fi          # generate ./configure from configure.ac
-./configure --prefix=/usr/local
+autoreconf -fi                   # generate ./configure from configure.ac
+bash ./configure --prefix=/usr/local  # bash required: configure uses CFLAGS+= (bash-ism, breaks busybox ash)
 make -j$(nproc)
 make install
 ```
