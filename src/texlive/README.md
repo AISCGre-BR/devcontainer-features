@@ -9,7 +9,7 @@ Installs [TeX Live](https://www.tug.org/texlive/) via the official TUG network i
 | `scheme` | string | `full` | TeX Live scheme to install. See [TeX Live schemes](https://www.tug.org/texlive/doc/texlive-en/texlive-en.html#x1-340003.3). |
 | `packages` | string | `""` | Space-separated list of additional tlmgr packages to install after the base scheme. |
 | `release` | string | `latest` | TeX Live release year (`latest`, `2026`, `2025`, ..., `2015`) or `latest` for the current release. |
-| `mirror` | string | `""` | Custom tlnet mirror URL (must point to a directory containing `tlpkg/`). |
+| `mirror` | string | `""` | Custom TeX Live mirror base URL (e.g. `https://mirror.example.com`). The path `/CTAN/systems/texlive/tlnet` will be appended automatically. |
 
 ## Available Schemes
 
@@ -27,4 +27,5 @@ Installs [TeX Live](https://www.tug.org/texlive/) via the official TUG network i
 - Binaries are symlinked into `/usr/local/bin` so they are on `PATH` without modifying shell profiles.
 - `MANPATH` and `INFOPATH` environment variables are set to include TeX Live man and info pages.
 - For historical releases, the installer is fetched from `https://ftp.tug.org/texlive/historic/<year>/`.
-- A custom mirror must expose a standard tlnet tree (i.e., contain `tlpkg/texlive.tlpdb`).
+- When using a custom mirror, provide only the base URL (e.g. `https://mirror.example.com`); the installer automatically appends `/CTAN/systems/texlive/tlnet` to construct the full tlnet repository path.
+- A custom mirror must expose a standard tlnet tree at the path constructed by the installer (i.e., contain `CTAN/systems/texlive/tlnet/tlpkg/texlive.tlpdb`).

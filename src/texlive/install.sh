@@ -128,7 +128,7 @@ install_prerequisites() {
 # ---------------------------------------------------------------------------
 resolve_installer_url() {
     if [ -n "${MIRROR}" ]; then
-        echo "${MIRROR%/}/install-tl-unx.tar.gz"
+        echo "${MIRROR%/}/CTAN/systems/texlive/tlnet/install-tl-unx.tar.gz"
         return
     fi
 
@@ -144,7 +144,7 @@ resolve_installer_url() {
 # ---------------------------------------------------------------------------
 resolve_tlnet_url() {
     if [ -n "${MIRROR}" ]; then
-        echo "${MIRROR%/}"
+        echo "${MIRROR%/}/CTAN/systems/texlive/tlnet"
         return
     fi
 

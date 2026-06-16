@@ -27,7 +27,7 @@
         "mirror": {
             "type": "string",
             "default": "",
-            "description": "Custom TeX Live mirror URL pointing to a tlnet directory (e.g. 'https://mirror.example.com/ctan/systems/texlive/tlnet'). Overrides the automatic mirror selection."
+            "description": "Custom TeX Live mirror base URL (e.g. 'https://mirror.example.com'). The path '/CTAN/systems/texlive/tlnet' will be appended automatically. Overrides the automatic mirror selection."
         }
     },
     "installsAfter": [],
