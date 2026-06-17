@@ -277,19 +277,20 @@ install_gregorio() {
         echo "Configuring Gregorio..."
         # Run with bash explicitly: Gregorio's configure uses CFLAGS+= (bash-ism)
         # which breaks under busybox ash (/bin/sh on Alpine).
-        bash ./configure --prefix=/usr/local
+        # --disable-version-in-exe: install the binary as 'gregorio', not 'gregorio-6_2_0'.
+        bash ./configure --prefix=/usr/local --disable-version-in-exe
         echo "Building Gregorio..."
         make -j"$(nproc)"
         echo "Installing Gregorio..."
         make install
     )
 
-    # Refresh the TeX filename database so TEXMFLOCAL files are found.
-    if command -v texhash &>/dev/null; then
-        texhash
-    elif command -v mktexlsr &>/dev/null; then
-        mktexlsr
-    fi
+    # make install only installs the gregorio binary; the GregorioTeX TeX support
+    # files (gregoriotex.sty, .tex, .lua, fonts) are installed by a separate
+    # script. Without this step, kpsewhich cannot find gregoriotex and lualatex
+    # compilation will fail.
+    echo "Installing GregorioTeX TeX support files..."
+    ( cd "${src_dir}" && SKIP="docs,examples,font-sources" AUTO_UNINSTALL=true bash ./install-gtex.sh system )
 
     echo "Gregorio ${display_ref} installed."
 

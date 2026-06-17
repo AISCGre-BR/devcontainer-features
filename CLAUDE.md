@@ -6,8 +6,8 @@ This repository provides four [Dev Container Features](https://containers.dev/im
 
 | Feature | Version | Description | Build system |
 |---------|---------|-------------|--------------|
-| `texlive` | 2.0.5 | Installs TeX Live via the official TUG network installer | Shell (`install-tl`) |
-| `gregorio` | 2.0.7 | Builds and installs Gregorio (Gregorian chant engraver) from source | **Autotools** (`autoreconf` + `./configure` + `make`) |
+| `texlive` | 2.0.7 | Installs TeX Live via the official TUG network installer | Shell (`install-tl`) |
+| `gregorio` | 2.0.8 | Builds and installs Gregorio (Gregorian chant engraver) from source | **Autotools** (`autoreconf` + `./configure` + `make`) |
 | `gregorio-lsp` | 1.0.6 | Builds and installs the Gregorio language server (`gregorio-lsp`, `grelint`, `grefmt`) from source | **Cargo** (`cargo build --release`) |
 | `tree-sitter-gregorio` | 1.0.4 | Builds and installs the tree-sitter-gregorio grammar from source | **Make** / npm (grammar-dependent) |
 
