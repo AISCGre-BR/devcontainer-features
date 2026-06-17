@@ -1,6 +1,6 @@
 {
     "id": "tree-sitter-gregorio",
-    "version": "1.0.3",
+    "version": "1.0.4",
     "name": "Tree-Sitter Gregorio",
     "description": "Installs tree-sitter-gregorio grammar from source on Debian/Ubuntu, Red Hat/Fedora, or Alpine based systems.",
     "documentationURL": "https://github.com/AISCGre-BR/devcontainer-features",

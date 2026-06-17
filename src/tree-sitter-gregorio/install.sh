@@ -230,6 +230,10 @@ install_tree_sitter_gregorio() {
     local repo_url
     repo_url="$(construct_repo_url "${HOST}" "${REPOSITORY}")"
 
+    echo "Installing prerequisites..."
+    update_pkg_index
+    pkg_install curl ca-certificates
+
     # Resolve the ref and tarball URL.
     # Empty ref  → HEAD of the default branch.
     # "latest"   → latest release tag resolved via the forge API.
@@ -252,12 +256,10 @@ install_tree_sitter_gregorio() {
 
     echo "Installing tree-sitter-gregorio build dependencies..."
     if is_debian_like; then
-        update_pkg_index
         install_build_deps build-essential gcc g++ make tree-sitter-cli pkg-config
     elif is_redhat_like; then
         install_build_deps gcc gcc-c++ make tree-sitter pkgconf
     elif is_alpine; then
-        update_pkg_index
         install_build_deps build-base gcc g++ make tree-sitter pkgconfig
     fi
 
