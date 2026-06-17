@@ -361,6 +361,12 @@ main() {
     install_extra_packages
     ensure_latexindent_deps
 
+    # The devcontainer-cli feature build copies files from a scratch-based stage
+    # into /tmp/dev-container-features, which records /tmp in the overlay with
+    # 755 (no sticky bit), overriding the base image's 1777. Restore it here so
+    # non-root users (e.g. the remoteUser) can write to /tmp at runtime.
+    chmod 1777 /tmp
+
     echo "TeX Live installation complete."
     tex --version | head -1 || true
 }
