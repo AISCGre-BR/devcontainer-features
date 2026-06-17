@@ -2,8 +2,7 @@
 # bash is required for array-based Perl module tracking.
 # Alpine's /bin/sh (busybox ash) lacks bash arrays, so bootstrap bash first.
 SCHEME="${SCHEME:-full}"
-# Accept comma-separated packages (preferred: avoids shell word-splitting in
-# unquoted devcontainer-features.env) as well as the legacy space-separated form.
+# Normalise: accept space- or comma-separated package lists.
 PACKAGES="$(printf '%s' "${PACKAGES:-}" | tr ',' ' ')"
 RELEASE="${RELEASE:-latest}"
 MIRROR="${MIRROR:-}"
@@ -25,7 +24,7 @@ fi
 set -euo pipefail
 
 INSTALL_TL_DIR="$(mktemp -d)"
-TEXLIVE_PREFIX="/usr/local/texlive"
+TEXLIVE_PREFIX="/opt/texlive"
 
 cleanup() {
     rm -rf "${INSTALL_TL_DIR}"
@@ -274,6 +273,8 @@ install_extra_packages() {
     echo "Installing additional TeX Live packages: ${PACKAGES}"
     # shellcheck disable=SC2086
     tlmgr install ${PACKAGES}
+    # New executables land in bin_dir after tlmgr install; symlink them to sys_bin.
+    tlmgr path add
 }
 
 # ---------------------------------------------------------------------------

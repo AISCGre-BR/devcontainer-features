@@ -17,6 +17,11 @@ if [ -f ./devcontainer-features.env ]; then
             *=*)
                 _key="${_line%%=*}"
                 _val="${_line#*=}"
+                # Strip surrounding quotes added by some devcontainer implementations.
+                case "${_val}" in
+                    '"'*'"') _val="${_val#\"}"; _val="${_val%\"}" ;;
+                    "'"*"'") _val="${_val#\'}"; _val="${_val%\'}" ;;
+                esac
                 case "${_key}" in
                     *[!A-Za-z0-9_]*) continue ;;   # skip invalid identifiers
                 esac

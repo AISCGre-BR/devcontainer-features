@@ -28,11 +28,11 @@
         "packages": {
             "type": "string",
             "default": "",
-            "description": "Comma-separated list of additional TeX Live packages to install after the base scheme (e.g. 'latexmk,biber'). Commas are preferred over spaces to avoid shell word-splitting bugs in some devcontainer implementations. Space-separated values are also accepted.",
+            "description": "Space-separated list of additional TeX Live packages to install after the base scheme (e.g. 'latexmk biber'). Comma-separated values are also accepted.",
             "proposals": [
                 "",
-                "latexmk,biber",
-                "latexmk,latexindent,microtype"
+                "latexmk biber",
+                "latexmk latexindent microtype"
             ]
         },
         "release": {
@@ -65,7 +65,7 @@
         "ghcr.io/devcontainers/features/common-utils"
     ],
     "containerEnv": {
-        "MANPATH": "/usr/local/texlive/bin/man:${MANPATH}",
-        "INFOPATH": "/usr/local/texlive/bin/info:${INFOPATH}"
+        "MANPATH": "/opt/texlive/bin/man:${MANPATH}",
+        "INFOPATH": "/opt/texlive/bin/info:${INFOPATH}"
     }
 }
