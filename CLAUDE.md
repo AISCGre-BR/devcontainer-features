@@ -127,6 +127,7 @@ All four `install.sh` scripts share the same skeleton:
 | automake | `automake` | `automake` | `automake` |
 | libtool | `libtool` | `libtool` | `libtool` |
 | C compiler | `gcc` | `gcc` | `gcc` |
+| C library headers | *(included with gcc)* | *(included with gcc)* | `musl-dev` |
 | make | `make` | `make` | `make` |
 | lexer generator | `flex` | `flex` | `flex` |
 | parser generator | `bison` | `bison` | `bison` |

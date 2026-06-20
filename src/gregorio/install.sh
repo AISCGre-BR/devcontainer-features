@@ -260,7 +260,7 @@ install_gregorio() {
     elif is_redhat_like; then
         install_build_deps autoconf automake libtool gcc make flex bison python3 fontforge pkgconf
     elif is_alpine; then
-        install_build_deps autoconf automake libtool gcc make flex bison python3 fontforge pkgconfig
+        install_build_deps autoconf automake libtool gcc musl-dev make flex bison python3 fontforge pkgconfig
     fi
 
     echo "Downloading Gregorio ${display_ref} from ${tarball_url}..."
