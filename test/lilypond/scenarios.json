@@ -18,7 +18,7 @@
     "alpine_source_build_with_texlive": {
         "image": "alpine:3.21",
         "features": {
-            "texlive": {
+            "ghcr.io/aiscgre-br/devcontainer-features/texlive": {
                 "scheme": "minimal",
                 "packages": "metapost"
             },

@@ -243,7 +243,7 @@ install_from_source() {
         # CTAN package required by LilyPond's configure script.
         install_build_deps \
             g++ musl-dev make autoconf automake libtool \
-            bison flex pkgconf \
+            bison flex flex-dev pkgconf \
             guile-dev freetype-dev cairo-dev pango-dev glib-dev \
             fontconfig-dev libpng-dev zlib-dev gc-dev gettext-dev \
             t1utils fontforge wget ca-certificates
