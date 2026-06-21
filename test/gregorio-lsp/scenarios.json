@@ -1,12 +1,28 @@
 {
-    "gregorio_lsp_skipped": {},
+    "gregorio_lsp_skipped": {
+        "features": {
+            "gregorio-lsp": {}
+        }
+    },
     "gregorio_lsp_specific_tag": {
-        "ref": "v0.9.4"
+        "features": {
+            "gregorio-lsp": {
+                "ref": "v0.9.4"
+            }
+        }
     },
     "gregorio_lsp_latest": {
-        "ref": "latest"
+        "features": {
+            "gregorio-lsp": {
+                "ref": "latest"
+            }
+        }
     },
     "gregorio_lsp_with_branch": {
-        "ref": "main"
+        "features": {
+            "gregorio-lsp": {
+                "ref": "main"
+            }
+        }
     }
 }

@@ -255,13 +255,21 @@ install_gregorio_lsp() {
     tarball_url="$(construct_tarball_url "${HOST}" "${REPOSITORY}" "${ref}")"
 
     echo "Installing Rust build toolchain..."
+    # Use rustup to get a current stable Rust (≥ 1.85), since apt on some distros
+    # (e.g. Ubuntu 22.04) ships 1.75 which cannot compile edition2024 crates.
     if is_debian_like; then
-        install_build_deps rustc cargo gcc pkg-config
+        install_build_deps gcc pkg-config
     elif is_redhat_like; then
-        install_build_deps rust cargo gcc pkgconf
+        install_build_deps gcc pkgconf
     elif is_alpine; then
-        install_build_deps rust cargo gcc musl-dev pkgconfig
+        install_build_deps gcc musl-dev pkgconfig
     fi
+    export RUSTUP_HOME="${BUILD_DIR}/rustup"
+    export CARGO_HOME="${BUILD_DIR}/cargo-home"
+    export CARGO_TARGET_DIR="${BUILD_DIR}/cargo-target"
+    curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs \
+        | sh -s -- -y --default-toolchain stable --no-modify-path
+    export PATH="${CARGO_HOME}/bin:${PATH}"
 
     echo "Downloading gregorio-lsp ${display_ref} from ${tarball_url}..."
     curl -sSfL "${tarball_url}" -o "${BUILD_DIR}/gregorio-lsp.tar.gz"
@@ -271,20 +279,9 @@ install_gregorio_lsp() {
     tar -xzf "${BUILD_DIR}/gregorio-lsp.tar.gz" --strip-components=1 -C "${src_dir}"
 
     echo "Building gregorio-lsp, grelint, grefmt..."
-    # Redirect Cargo's home and cache into the temp build dir so nothing
-    # leaks into the container's home directory.
-    export CARGO_HOME="${BUILD_DIR}/cargo-home"
-    export CARGO_TARGET_DIR="${BUILD_DIR}/cargo-target"
-
     (
         cd "${src_dir}"
-        # Cargo.lock version 4 requires Rust 1.78+. If the installed rustc is
-        # older (e.g. Ubuntu 22.04 ships 1.75), parsing the lock file fails even
-        # without --locked. Remove it so cargo regenerates a compatible version.
-        if ! cargo build --release --locked 2>/dev/null; then
-            rm -f Cargo.lock
-            cargo build --release
-        fi
+        cargo build --release
     )
 
     echo "Installing gregorio-lsp binaries to /usr/local/bin..."
@@ -298,7 +295,7 @@ install_gregorio_lsp() {
 
     echo "gregorio-lsp ${display_ref} installed."
 
-    echo "Removing Rust build toolchain..."
+    echo "Removing build-only packages..."
     remove_build_deps
 }
 

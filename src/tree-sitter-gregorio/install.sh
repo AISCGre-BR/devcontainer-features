@@ -2,7 +2,7 @@
 # bash is required for array-based build-dep tracking.
 # Alpine's /bin/sh (busybox ash) lacks bash arrays, so bootstrap bash first.
 HOST="${HOST:-github}"
-REPOSITORY="${REPOSITORY:-gregorio-project/tree-sitter-gregorio}"
+REPOSITORY="${REPOSITORY:-aiscgre-br/tree-sitter-gregorio}"
 REF="${REF:-}"
 
 if [ -z "${BASH_VERSION:-}" ]; then

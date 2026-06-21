@@ -1,12 +1,28 @@
 {
-    "gregorio_bundled": {},
+    "gregorio_bundled": {
+        "features": {
+            "gregorio": {}
+        }
+    },
     "gregorio_specific_tag": {
-        "ref": "v6.2.0"
+        "features": {
+            "gregorio": {
+                "ref": "v6.2.0"
+            }
+        }
     },
     "gregorio_latest": {
-        "ref": "latest"
+        "features": {
+            "gregorio": {
+                "ref": "latest"
+            }
+        }
     },
     "gregorio_with_branch": {
-        "ref": "main"
+        "features": {
+            "gregorio": {
+                "ref": "main"
+            }
+        }
     }
 }

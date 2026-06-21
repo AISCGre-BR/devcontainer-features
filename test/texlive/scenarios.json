@@ -1,13 +1,29 @@
 {
-    "install_full_latest": {},
+    "install_full_latest": {
+        "features": {
+            "texlive": {}
+        }
+    },
     "install_basic_latest": {
-        "scheme": "basic"
+        "features": {
+            "texlive": {
+                "scheme": "basic"
+            }
+        }
     },
     "install_minimal_with_packages": {
-        "scheme": "minimal",
-        "packages": "latexmk biber"
+        "features": {
+            "texlive": {
+                "scheme": "minimal",
+                "packages": "latexmk biber"
+            }
+        }
     },
     "install_specific_release": {
-        "release": "2024"
+        "features": {
+            "texlive": {
+                "release": "2024"
+            }
+        }
     }
 }

@@ -1,12 +1,28 @@
 {
-    "tree_sitter_gregorio_skipped": {},
+    "tree_sitter_gregorio_skipped": {
+        "features": {
+            "tree-sitter-gregorio": {}
+        }
+    },
     "tree_sitter_gregorio_specific_tag": {
-        "ref": "v1.0.0"
+        "features": {
+            "tree-sitter-gregorio": {
+                "ref": "v0.5.2"
+            }
+        }
     },
     "tree_sitter_gregorio_latest": {
-        "ref": "latest"
+        "features": {
+            "tree-sitter-gregorio": {
+                "ref": "latest"
+            }
+        }
     },
     "tree_sitter_gregorio_with_branch": {
-        "ref": "main"
+        "features": {
+            "tree-sitter-gregorio": {
+                "ref": "main"
+            }
+        }
     }
 }

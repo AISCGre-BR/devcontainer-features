@@ -25,8 +25,8 @@
         },
         "repository": {
             "type": "string",
-            "default": "gregorio-project/tree-sitter-gregorio",
-            "description": "Repository in OWNER/REPO format (e.g. 'gregorio-project/tree-sitter-gregorio'). Used together with host to construct the full repository URL."
+            "default": "aiscgre-br/tree-sitter-gregorio",
+            "description": "Repository in OWNER/REPO format (e.g. 'aiscgre-br/tree-sitter-gregorio'). Used together with host to construct the full repository URL."
         },
         "ref": {
             "type": "string",
@@ -35,7 +35,7 @@
             "proposals": [
                 "",
                 "latest",
-                "v1.0.0",
+                "v0.5.2",
                 "main"
             ]
         }

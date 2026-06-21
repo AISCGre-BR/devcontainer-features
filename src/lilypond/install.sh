@@ -232,11 +232,11 @@ install_from_source() {
             gettext t1utils wget ca-certificates
     elif is_alpine; then
         install_build_deps \
-            g++ make autoconf automake libtool \
+            g++ musl-dev make autoconf automake libtool \
             bison flex pkgconf \
             guile-dev freetype-dev cairo-dev pango-dev glib-dev \
             fontconfig-dev libpng-dev zlib-dev gc-dev gettext-dev \
-            t1utils wget ca-certificates
+            t1utils fontforge texlive wget ca-certificates
     fi
 
     echo "Downloading: ${url}"
