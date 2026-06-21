@@ -258,9 +258,11 @@ install_gregorio_lsp() {
     # Use rustup to get a current stable Rust (≥ 1.85), since apt on some distros
     # (e.g. Ubuntu 22.04) ships 1.75 which cannot compile edition2024 crates.
     if is_debian_like; then
-        install_build_deps gcc pkg-config
+        # libc6-dev provides crt1.o/crti.o — required by the linker even for
+        # pure-Rust binaries; ubuntu:22.04 base image does not include it.
+        install_build_deps gcc libc6-dev pkg-config
     elif is_redhat_like; then
-        install_build_deps gcc pkgconf
+        install_build_deps gcc glibc-devel pkgconf
     elif is_alpine; then
         install_build_deps gcc musl-dev pkgconfig
     fi

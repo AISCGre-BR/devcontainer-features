@@ -263,13 +263,15 @@ install_from_source() {
     remove_build_deps
 }
 
-# Absolute last resort: distro package manager for unknown OS families.
-# The `version` option is ignored.
+# Install from the distribution package manager.
+# Used for Alpine (source build requires TeX Live CTAN packages not available
+# as discrete apk packages) and for unknown OS families.
+# The `version` option is ignored; the distro's packaged version is installed.
 install_from_distro() {
     local arch
     arch="$(uname -m)"
-    echo "Unsupported OS '${OS_ID}' (arch: ${arch}): cannot build from source or use the official binary."
-    echo "Falling back to the distribution package manager (version option ignored)." >&2
+    echo "Installing LilyPond from the distribution package manager (arch: ${arch}, OS: ${OS_ID})."
+    echo "Note: the 'version' option is ignored for distro-package installs." >&2
     update_pkg_index
     pkg_install lilypond
 }
@@ -312,12 +314,17 @@ EOF
 # ---------------------------------------------------------------------------
 main() {
     # Official precompiled binary: x86_64 + glibc-based distro only.
-    # Alpine uses musl libc, so even x86_64 Alpine must build from source.
     if [ "$(uname -m)" = "x86_64" ] && (is_debian_like || is_redhat_like); then
         install_from_official "${VERSION}"
-    elif is_debian_like || is_redhat_like || is_alpine; then
+    elif is_debian_like || is_redhat_like; then
+        # Non-x86_64 glibc distros (e.g. ARM64 Debian/Ubuntu): build from source.
         install_from_source "${VERSION}"
     else
+        # Alpine (musl libc) and unknown distros: use the distro package manager.
+        # Building LilyPond from source on Alpine requires TeX Live's MetaPost
+        # engine AND several CTAN packages that are not available as discrete
+        # Alpine apk packages, making a source build impractical. Alpine's
+        # community repository ships a well-maintained lilypond package.
         install_from_distro
     fi
 

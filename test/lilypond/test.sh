@@ -12,16 +12,19 @@ check "lilypond --version reports LilyPond" \
 
 # ---------------------------------------------------------------------------
 # Versioned install prefix (/opt/lilypond/<version>)
-# All supported paths (official binary on x86_64, source build on Alpine and
-# other architectures) install under /opt/lilypond/<version>.
+# Used by the official binary path (x86_64 glibc) and the source build path
+# (non-x86_64 glibc). Alpine uses the distro package (apk add lilypond) which
+# installs to system paths, so /opt checks are skipped there.
 # ---------------------------------------------------------------------------
 INSTALLED_VERSION="$(lilypond --version 2>/dev/null | awk 'NR==1{print $3}')"
 
-check "versioned prefix /opt/lilypond/${INSTALLED_VERSION} exists" \
-    test -d "/opt/lilypond/${INSTALLED_VERSION}"
+if [ ! -f /etc/alpine-release ]; then
+    check "versioned prefix /opt/lilypond/${INSTALLED_VERSION} exists" \
+        test -d "/opt/lilypond/${INSTALLED_VERSION}"
 
-check "lilypond symlink resolves into /opt/lilypond" \
-    bash -c "readlink -f \"\$(command -v lilypond)\" | grep -qF '/opt/lilypond/'"
+    check "lilypond symlink resolves into /opt/lilypond" \
+        bash -c "readlink -f \"\$(command -v lilypond)\" | grep -qF '/opt/lilypond/'"
+fi
 
 # ---------------------------------------------------------------------------
 # End-to-end compilation

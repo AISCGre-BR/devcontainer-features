@@ -1,10 +1,12 @@
 {
     "gregorio_lsp_skipped": {
+        "image": "ubuntu:22.04",
         "features": {
             "gregorio-lsp": {}
         }
     },
     "gregorio_lsp_specific_tag": {
+        "image": "ubuntu:22.04",
         "features": {
             "gregorio-lsp": {
                 "ref": "v0.9.4"
@@ -12,6 +14,7 @@
         }
     },
     "gregorio_lsp_latest": {
+        "image": "ubuntu:22.04",
         "features": {
             "gregorio-lsp": {
                 "ref": "latest"
@@ -19,6 +22,7 @@
         }
     },
     "gregorio_lsp_with_branch": {
+        "image": "ubuntu:22.04",
         "features": {
             "gregorio-lsp": {
                 "ref": "main"

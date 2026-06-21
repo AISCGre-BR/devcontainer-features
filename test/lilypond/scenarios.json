@@ -1,5 +1,6 @@
 {
     "install_specific_version": {
+        "image": "ubuntu:22.04",
         "features": {
             "lilypond": {
                 "version": "2.24.4"
@@ -7,6 +8,7 @@
         }
     },
     "install_texlive_fonts_no_texlive": {
+        "image": "ubuntu:22.04",
         "features": {
             "lilypond": {
                 "texliveFonts": true

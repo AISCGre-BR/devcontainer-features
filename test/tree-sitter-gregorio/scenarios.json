@@ -1,10 +1,12 @@
 {
     "tree_sitter_gregorio_skipped": {
+        "image": "ubuntu:22.04",
         "features": {
             "tree-sitter-gregorio": {}
         }
     },
     "tree_sitter_gregorio_specific_tag": {
+        "image": "ubuntu:22.04",
         "features": {
             "tree-sitter-gregorio": {
                 "ref": "v0.5.2"
@@ -12,6 +14,7 @@
         }
     },
     "tree_sitter_gregorio_latest": {
+        "image": "ubuntu:22.04",
         "features": {
             "tree-sitter-gregorio": {
                 "ref": "latest"
@@ -19,6 +22,7 @@
         }
     },
     "tree_sitter_gregorio_with_branch": {
+        "image": "ubuntu:22.04",
         "features": {
             "tree-sitter-gregorio": {
                 "ref": "main"

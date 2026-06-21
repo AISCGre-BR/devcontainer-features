@@ -273,37 +273,26 @@ install_tree_sitter_gregorio() {
     mkdir -p "${src_dir}"
     tar -xzf "${BUILD_DIR}/tree-sitter-gregorio.tar.gz" --strip-components=1 -C "${src_dir}"
 
-    echo "Building tree-sitter-gregorio grammar..."
-    (
-        cd "${src_dir}"
-        if [ -f Makefile ]; then
-            make
-        elif [ -f build.sh ]; then
-            bash build.sh
-        elif [ -f package.json ]; then
-            # If it's an npm project, try to use npm
-            if command -v npm &>/dev/null; then
-                npm install
-                npm run build || true
-            fi
-        fi
-    )
-
     echo "Installing tree-sitter-gregorio grammar..."
-    # Tree-sitter grammars are typically installed in ~/.local/share/tree-sitter/grammars
-    # or in /usr/local/lib/tree-sitter/grammars
     local grammar_dir="/usr/local/lib/tree-sitter/grammars"
     mkdir -p "${grammar_dir}"
 
-    # Copy compiled grammar library if it exists
-    if [ -f "${src_dir}/build/Release/tree-sitter-gregorio.so" ]; then
-        install -m 0755 "${src_dir}/build/Release/tree-sitter-gregorio.so" "${grammar_dir}/gregorio.so"
-        echo "Installed grammar library to ${grammar_dir}/gregorio.so"
-    elif [ -f "${src_dir}/build/tree-sitter-gregorio.so" ]; then
-        install -m 0755 "${src_dir}/build/tree-sitter-gregorio.so" "${grammar_dir}/gregorio.so"
+    # tree-sitter grammars ship src/parser.c (and optionally src/scanner.c)
+    # alongside src/tree_sitter/parser.h. Compile directly into a shared library
+    # without needing tree-sitter-cli.
+    local c_sources=()
+    for f in "${src_dir}/src"/*.c; do
+        [ -f "${f}" ] && c_sources+=("${f}")
+    done
+
+    if [ "${#c_sources[@]}" -gt 0 ]; then
+        cc -shared -fPIC -g -O2 \
+            -o "${grammar_dir}/gregorio.so" \
+            -I "${src_dir}/src" \
+            "${c_sources[@]}"
         echo "Installed grammar library to ${grammar_dir}/gregorio.so"
     else
-        echo "WARNING: compiled grammar library not found" >&2
+        echo "WARNING: no C source files found in src/ — grammar library not built" >&2
     fi
 
     echo "tree-sitter-gregorio ${display_ref} installed."

@@ -1,10 +1,12 @@
 {
     "gregorio_bundled": {
+        "image": "ubuntu:22.04",
         "features": {
             "gregorio": {}
         }
     },
     "gregorio_specific_tag": {
+        "image": "ubuntu:22.04",
         "features": {
             "gregorio": {
                 "ref": "v6.2.0"
@@ -12,6 +14,7 @@
         }
     },
     "gregorio_latest": {
+        "image": "ubuntu:22.04",
         "features": {
             "gregorio": {
                 "ref": "latest"
@@ -19,6 +22,7 @@
         }
     },
     "gregorio_with_branch": {
+        "image": "ubuntu:22.04",
         "features": {
             "gregorio": {
                 "ref": "main"

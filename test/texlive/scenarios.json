@@ -1,10 +1,12 @@
 {
     "install_full_latest": {
+        "image": "ubuntu:22.04",
         "features": {
             "texlive": {}
         }
     },
     "install_basic_latest": {
+        "image": "ubuntu:22.04",
         "features": {
             "texlive": {
                 "scheme": "basic"
@@ -12,6 +14,7 @@
         }
     },
     "install_minimal_with_packages": {
+        "image": "ubuntu:22.04",
         "features": {
             "texlive": {
                 "scheme": "minimal",
@@ -20,6 +23,7 @@
         }
     },
     "install_specific_release": {
+        "image": "ubuntu:22.04",
         "features": {
             "texlive": {
                 "release": "2024"
