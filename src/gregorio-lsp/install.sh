@@ -215,10 +215,18 @@ resolve_github_latest() {
     local repo_url="$1"
     local repo
     repo="$(printf '%s' "${repo_url}" | sed 's|https://github.com/||')"
-    curl -sSfL "https://api.github.com/repos/${repo}/releases/latest" \
-        | grep '"tag_name"' \
-        | head -1 \
-        | sed 's/.*"tag_name"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/'
+    # /releases/latest excludes pre-releases and 404s when none exist.
+    # Fall back to /releases?per_page=1 (most recent, pre-release or not).
+    local tag
+    tag="$(curl -sSL "https://api.github.com/repos/${repo}/releases/latest" \
+        | grep '"tag_name"' | head -1 \
+        | sed 's/.*"tag_name"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/')"
+    if [ -z "${tag}" ]; then
+        tag="$(curl -sSfL "https://api.github.com/repos/${repo}/releases?per_page=1" \
+            | grep '"tag_name"' | head -1 \
+            | sed 's/.*"tag_name"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/')"
+    fi
+    printf '%s\n' "${tag}"
 }
 
 # ---------------------------------------------------------------------------

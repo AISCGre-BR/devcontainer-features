@@ -286,7 +286,7 @@ configure_texlive_fonts() {
 
     local tl_fonts_dir
     tl_fonts_dir="$(find /opt/texlive -mindepth 3 -maxdepth 4 -type d \
-        -name 'fonts' -path '*/texmf-dist/fonts' 2>/dev/null | head -1)"
+        -name 'fonts' -path '*/texmf-dist/fonts' 2>/dev/null | head -1 || true)"
 
     if [ -z "${tl_fonts_dir}" ]; then
         echo "WARNING: TeX Live fonts directory not found under /opt/texlive." >&2
