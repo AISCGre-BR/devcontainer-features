@@ -1,9 +1,0 @@
-{
-    "scenarios": [
-        {
-            "id": "install_default",
-            "description": "Install pandoc via the system package manager",
-            "options": {}
-        }
-    ]
-}

@@ -216,25 +216,27 @@ install_from_source() {
     fi
 
     # Build-only dependencies — tracked for removal after the build.
+    # t1utils provides t1asm, which LilyPond's configure requires for font
+    # assembly (checked unconditionally even with --disable-documentation).
     if is_debian_like; then
         install_build_deps \
             g++ make autoconf automake libtool bison flex pkg-config \
             guile-3.0-dev libfreetype-dev libcairo2-dev libpango1.0-dev \
             libglib2.0-dev libfontconfig1-dev libpng-dev zlib1g-dev \
-            libgc-dev gettext wget ca-certificates
+            libgc-dev gettext t1utils wget ca-certificates
     elif is_redhat_like; then
         install_build_deps \
             gcc-c++ make autoconf automake libtool bison flex pkgconf \
             guile-devel freetype-devel cairo-devel pango-devel glib2-devel \
             fontconfig-devel libpng-devel zlib-devel gc-devel \
-            gettext wget ca-certificates
+            gettext t1utils wget ca-certificates
     elif is_alpine; then
         install_build_deps \
             g++ make autoconf automake libtool \
             bison flex pkgconf \
             guile-dev freetype-dev cairo-dev pango-dev glib-dev \
             fontconfig-dev libpng-dev zlib-dev gc-dev gettext-dev \
-            wget ca-certificates
+            t1utils wget ca-certificates
     fi
 
     echo "Downloading: ${url}"
@@ -309,7 +311,9 @@ EOF
 # Main
 # ---------------------------------------------------------------------------
 main() {
-    if ! is_alpine && [ "$(uname -m)" = "x86_64" ]; then
+    # Official precompiled binary: x86_64 + glibc-based distro only.
+    # Alpine uses musl libc, so even x86_64 Alpine must build from source.
+    if [ "$(uname -m)" = "x86_64" ] && (is_debian_like || is_redhat_like); then
         install_from_official "${VERSION}"
     elif is_debian_like || is_redhat_like || is_alpine; then
         install_from_source "${VERSION}"

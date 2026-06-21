@@ -1,39 +1,12 @@
 {
-    "scenarios": [
-        {
-            "id": "gregorio_bundled",
-            "description": "No ref specified — install Gregorio from the HEAD of the default branch",
-            "options": {}
-        },
-        {
-            "id": "gregorio_specific_tag",
-            "description": "Build and install a specific Gregorio version from source",
-            "options": {
-                "ref": "v6.2.0"
-            }
-        },
-        {
-            "id": "gregorio_latest",
-            "description": "Build and install the latest Gregorio version from source",
-            "options": {
-                "ref": "latest"
-            }
-        },
-        {
-            "id": "gregorio_with_custom_host",
-            "description": "Install Gregorio from a custom host (e.g. GitLab)",
-            "options": {
-                "ref": "latest",
-                "host": "gitlab",
-                "repository": "gregorio-project/gregorio"
-            }
-        },
-        {
-            "id": "gregorio_with_branch",
-            "description": "Install Gregorio from a specific branch",
-            "options": {
-                "ref": "main"
-            }
-        }
-    ]
+    "gregorio_bundled": {},
+    "gregorio_specific_tag": {
+        "ref": "v6.2.0"
+    },
+    "gregorio_latest": {
+        "ref": "latest"
+    },
+    "gregorio_with_branch": {
+        "ref": "main"
+    }
 }

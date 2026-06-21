@@ -289,8 +289,17 @@ install_gregorio() {
     # files (gregoriotex.sty, .tex, .lua, fonts) are installed by a separate
     # script. Without this step, kpsewhich cannot find gregoriotex and lualatex
     # compilation will fail.
-    echo "Installing GregorioTeX TeX support files..."
-    ( cd "${src_dir}" && SKIP="docs,examples,font-sources" AUTO_UNINSTALL=true bash ./install-gtex.sh system )
+    #
+    # Skip when TeX Live is not present (e.g. standalone CI tests): the binary
+    # is still usable; the TeX support files can be installed later by running
+    # install-gtex.sh manually after installing the texlive feature.
+    if command -v kpsewhich >/dev/null 2>&1; then
+        echo "Installing GregorioTeX TeX support files..."
+        ( cd "${src_dir}" && SKIP="docs,examples,font-sources" AUTO_UNINSTALL=true bash ./install-gtex.sh system )
+    else
+        echo "WARNING: kpsewhich not found; skipping GregorioTeX TeX support file installation." >&2
+        echo "         Install the 'texlive' feature first, then run install-gtex.sh manually." >&2
+    fi
 
     echo "Gregorio ${display_ref} installed."
 

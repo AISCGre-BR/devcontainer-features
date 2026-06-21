@@ -1,31 +1,13 @@
 {
-    "scenarios": [
-        {
-            "id": "install_full_latest",
-            "description": "Install full scheme, latest release",
-            "options": {}
-        },
-        {
-            "id": "install_basic_latest",
-            "description": "Install basic scheme, latest release",
-            "options": {
-                "scheme": "basic"
-            }
-        },
-        {
-            "id": "install_minimal_with_packages",
-            "description": "Install minimal scheme with extra packages",
-            "options": {
-                "scheme": "minimal",
-                "packages": "latexmk biber"
-            }
-        },
-        {
-            "id": "install_specific_release",
-            "description": "Install full scheme from a specific release",
-            "options": {
-                "release": "2024"
-            }
-        }
-    ]
+    "install_full_latest": {},
+    "install_basic_latest": {
+        "scheme": "basic"
+    },
+    "install_minimal_with_packages": {
+        "scheme": "minimal",
+        "packages": "latexmk biber"
+    },
+    "install_specific_release": {
+        "release": "2024"
+    }
 }

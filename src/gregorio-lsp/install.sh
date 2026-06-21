@@ -278,8 +278,13 @@ install_gregorio_lsp() {
 
     (
         cd "${src_dir}"
-        cargo build --release --locked 2>/dev/null \
-            || cargo build --release
+        # Cargo.lock version 4 requires Rust 1.78+. If the installed rustc is
+        # older (e.g. Ubuntu 22.04 ships 1.75), parsing the lock file fails even
+        # without --locked. Remove it so cargo regenerates a compatible version.
+        if ! cargo build --release --locked 2>/dev/null; then
+            rm -f Cargo.lock
+            cargo build --release
+        fi
     )
 
     echo "Installing gregorio-lsp binaries to /usr/local/bin..."

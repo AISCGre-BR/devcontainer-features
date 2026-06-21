@@ -1,39 +1,12 @@
 {
-    "scenarios": [
-        {
-            "id": "tree_sitter_gregorio_skipped",
-            "description": "No ref specified — install tree-sitter-gregorio from the HEAD of the default branch",
-            "options": {}
-        },
-        {
-            "id": "tree_sitter_gregorio_specific_tag",
-            "description": "Build and install a specific tree-sitter-gregorio version from source",
-            "options": {
-                "ref": "v1.0.0"
-            }
-        },
-        {
-            "id": "tree_sitter_gregorio_latest",
-            "description": "Build and install the latest tree-sitter-gregorio version from source",
-            "options": {
-                "ref": "latest"
-            }
-        },
-        {
-            "id": "tree_sitter_gregorio_with_custom_host",
-            "description": "Install tree-sitter-gregorio from a custom host (e.g. GitLab)",
-            "options": {
-                "ref": "latest",
-                "host": "gitlab",
-                "repository": "gregorio-project/tree-sitter-gregorio"
-            }
-        },
-        {
-            "id": "tree_sitter_gregorio_with_branch",
-            "description": "Install tree-sitter-gregorio from a specific branch",
-            "options": {
-                "ref": "main"
-            }
-        }
-    ]
+    "tree_sitter_gregorio_skipped": {},
+    "tree_sitter_gregorio_specific_tag": {
+        "ref": "v1.0.0"
+    },
+    "tree_sitter_gregorio_latest": {
+        "ref": "latest"
+    },
+    "tree_sitter_gregorio_with_branch": {
+        "ref": "main"
+    }
 }

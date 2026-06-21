@@ -255,12 +255,15 @@ install_tree_sitter_gregorio() {
     tarball_url="$(construct_tarball_url "${HOST}" "${REPOSITORY}" "${ref}")"
 
     echo "Installing tree-sitter-gregorio build dependencies..."
+    # tree-sitter-gregorio commits parser.c so only a C compiler + make are
+    # needed to build the .so grammar library. The tree-sitter CLI is only
+    # required to regenerate parser.c from grammar.js (not needed here).
     if is_debian_like; then
-        install_build_deps build-essential gcc g++ make tree-sitter-cli pkg-config
+        install_build_deps build-essential gcc g++ make pkg-config
     elif is_redhat_like; then
-        install_build_deps gcc gcc-c++ make tree-sitter pkgconf
+        install_build_deps gcc gcc-c++ make pkgconf
     elif is_alpine; then
-        install_build_deps build-base gcc g++ make tree-sitter pkgconfig
+        install_build_deps build-base gcc g++ make pkgconfig
     fi
 
     echo "Downloading tree-sitter-gregorio ${display_ref} from ${tarball_url}..."
