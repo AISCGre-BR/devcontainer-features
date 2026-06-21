@@ -12,13 +12,12 @@ check "lilypond --version reports LilyPond" \
 
 # ---------------------------------------------------------------------------
 # Versioned install prefix (/opt/lilypond/<version>)
-# Used by the official binary path (x86_64 glibc) and the source build path
-# (non-x86_64 glibc). Alpine uses the distro package (apk add lilypond) which
-# installs to system paths, so /opt checks are skipped there.
+# Present when the official binary or source build was used.
+# Absent when the distro package manager was used (Alpine without TeX Live).
 # ---------------------------------------------------------------------------
 INSTALLED_VERSION="$(lilypond --version 2>/dev/null | awk 'NR==1{print $3}')"
 
-if [ ! -f /etc/alpine-release ]; then
+if [ -d /opt/lilypond ]; then
     check "versioned prefix /opt/lilypond/${INSTALLED_VERSION} exists" \
         test -d "/opt/lilypond/${INSTALLED_VERSION}"
 

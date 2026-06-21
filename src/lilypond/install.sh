@@ -147,6 +147,13 @@ remove_build_deps() {
 }
 
 # ---------------------------------------------------------------------------
+# TeX Live availability detection
+# ---------------------------------------------------------------------------
+has_texlive() {
+    command -v kpsewhich >/dev/null 2>&1
+}
+
+# ---------------------------------------------------------------------------
 # Symlink versioned binaries into /usr/local/bin
 # ---------------------------------------------------------------------------
 setup_path() {
@@ -231,12 +238,15 @@ install_from_source() {
             fontconfig-devel libpng-devel zlib-devel gc-devel \
             gettext t1utils wget ca-certificates
     elif is_alpine; then
+        # TeX Live is provided by the texlive feature (already in PATH);
+        # do not install the apk texlive package, which lacks the MetaPost
+        # CTAN package required by LilyPond's configure script.
         install_build_deps \
             g++ musl-dev make autoconf automake libtool \
             bison flex pkgconf \
             guile-dev freetype-dev cairo-dev pango-dev glib-dev \
             fontconfig-dev libpng-dev zlib-dev gc-dev gettext-dev \
-            t1utils fontforge texlive wget ca-certificates
+            t1utils fontforge wget ca-certificates
     fi
 
     echo "Downloading: ${url}"
@@ -264,9 +274,9 @@ install_from_source() {
 }
 
 # Install from the distribution package manager.
-# Used for Alpine (source build requires TeX Live CTAN packages not available
-# as discrete apk packages) and for unknown OS families.
-# The `version` option is ignored; the distro's packaged version is installed.
+# Fallback for Alpine without TeX Live (the MetaPost CTAN package required by
+# LilyPond's configure is not available as a discrete apk package), and for
+# unknown OS families. The `version` option is ignored.
 install_from_distro() {
     local arch
     arch="$(uname -m)"
@@ -319,12 +329,16 @@ main() {
     elif is_debian_like || is_redhat_like; then
         # Non-x86_64 glibc distros (e.g. ARM64 Debian/Ubuntu): build from source.
         install_from_source "${VERSION}"
+    elif is_alpine && has_texlive; then
+        # Alpine (musl) with TeX Live installed: build from source.
+        # The texlive feature provides mpost and kpsewhich, which the LilyPond
+        # configure script requires and are not available as discrete apk
+        # packages. Install the texlive feature before this one (guaranteed by
+        # installsAfter).
+        install_from_source "${VERSION}"
     else
-        # Alpine (musl libc) and unknown distros: use the distro package manager.
-        # Building LilyPond from source on Alpine requires TeX Live's MetaPost
-        # engine AND several CTAN packages that are not available as discrete
-        # Alpine apk packages, making a source build impractical. Alpine's
-        # community repository ships a well-maintained lilypond package.
+        # Alpine without TeX Live, or unknown distros: fall back to the distro
+        # package manager. Alpine's community repo ships a current lilypond.
         install_from_distro
     fi
 

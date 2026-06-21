@@ -2,7 +2,7 @@
     "id": "lilypond",
     "version": "1.0.0",
     "name": "LilyPond",
-    "description": "Installs LilyPond (music engraving program) from the official precompiled package on x86_64 Debian/Ubuntu and Red Hat/Fedora based systems, or via the system package manager on Alpine or non-x86_64 architectures.",
+    "description": "Installs LilyPond from the official precompiled package on x86_64 glibc systems, builds from source on non-x86_64 glibc systems and on Alpine when the texlive feature is present, or falls back to the distro package manager otherwise.",
     "documentationURL": "https://github.com/AISCGre-BR/devcontainer-features",
     "licenseURL": "https://github.com/AISCGre-BR/devcontainer-features/blob/main/LICENSE",
     "keywords": [
@@ -16,7 +16,7 @@
         "version": {
             "type": "string",
             "default": "2.26.0",
-            "description": "LilyPond version to install from the official precompiled package (e.g. '2.26.0', '2.24.4'). Ignored when installing via the system package manager (Alpine or non-x86_64 architectures).",
+            "description": "LilyPond version to install (e.g. '2.26.0', '2.24.4'). Used for the official binary and source builds. Ignored when falling back to the distro package manager (Alpine without the texlive feature).",
             "proposals": [
                 "2.26.0",
                 "2.24.4",
