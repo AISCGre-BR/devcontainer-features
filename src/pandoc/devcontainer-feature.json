@@ -1,0 +1,18 @@
+{
+    "id": "pandoc",
+    "version": "1.0.0",
+    "name": "Pandoc",
+    "description": "Installs Pandoc (universal document converter) via the system package manager on Debian/Ubuntu, Red Hat/Fedora, or Alpine based systems.",
+    "documentationURL": "https://github.com/AISCGre-BR/devcontainer-features",
+    "licenseURL": "https://github.com/AISCGre-BR/devcontainer-features/blob/main/LICENSE",
+    "keywords": [
+        "pandoc",
+        "document",
+        "converter",
+        "markdown",
+        "typesetting"
+    ],
+    "installsAfter": [
+        "ghcr.io/devcontainers/features/common-utils"
+    ]
+}

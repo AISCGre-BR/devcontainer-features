@@ -2,7 +2,7 @@
     "scenarios": [
         {
             "id": "gregorio_bundled",
-            "description": "No ref specified — use the Gregorio version bundled with TeX Live",
+            "description": "No ref specified — install Gregorio from the HEAD of the default branch",
             "options": {}
         },
         {

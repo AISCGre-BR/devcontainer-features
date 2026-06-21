@@ -12,22 +12,10 @@ check "feature completed without error" true
 if command -v gregorio &>/dev/null; then
     check "gregorio binary runs" bash -c "gregorio --version 2>&1 | grep -i gregorio"
 
-    # Build-only deps that must not remain in the image after installation.
-    check "cmake removed after gregorio build" bash -c "! command -v cmake"
-    check "fontforge removed after gregorio build" bash -c "! command -v fontforge"
-fi
-
-# ---------------------------------------------------------------------------
-# gregorio-lsp checks (only when gregorio_lsp_version was set)
-# ---------------------------------------------------------------------------
-if command -v gregorio-lsp &>/dev/null; then
-    check "gregorio-lsp binary present" which gregorio-lsp
-    check "grelint binary present" which grelint
-    check "grefmt binary present" which grefmt
-
-    # Rust toolchain must have been removed after the build.
-    check "cargo removed after gregorio-lsp build" bash -c "! command -v cargo"
-    check "rustc removed after gregorio-lsp build" bash -c "! command -v rustc"
+    # Build-only deps (Autotools + fontforge) must not remain after installation.
+    check "fontforge removed after build" bash -c "! command -v fontforge"
+    check "bison removed after build" bash -c "! command -v bison"
+    check "flex removed after build" bash -c "! command -v flex"
 fi
 
 reportResults

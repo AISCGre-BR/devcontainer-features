@@ -16,7 +16,12 @@ check "latexindent Perl Unicode::GCString" perl -MUnicode::GCString -e 1
 check "latexindent Perl Log::Dispatch" perl -MLog::Dispatch -e 1
 check "latexindent Perl Log::Log4perl" perl -MLog::Log4perl -e 1
 check "latexindent Perl File::Which" perl -MFile::Which -e 1
+check "latexindent Perl Sub::Identify" perl -MSub::Identify -e 1
 
-check "latexindent runs" bash -c "echo '\\\\begin{document}\\\\end{document}' | latexindent --logfile=/dev/null /dev/stdin 2>/dev/null || true"
+check "latexindent runs" bash -c "
+    t=\$(mktemp --suffix=.tex)
+    { echo '\\begin{document}'; echo '\\end{document}'; } > \"\${t}\"
+    latexindent --logfile=/dev/null \"\${t}\" >/dev/null
+"
 
 reportResults

@@ -1,0 +1,23 @@
+{
+    "scenarios": [
+        {
+            "id": "install_default",
+            "description": "Install with default options (version 2.26.0, no TeX Live font integration)",
+            "options": {}
+        },
+        {
+            "id": "install_specific_version",
+            "description": "Install a specific LilyPond version (2.24.4)",
+            "options": {
+                "version": "2.24.4"
+            }
+        },
+        {
+            "id": "install_texlive_fonts_no_texlive",
+            "description": "Install with texliveFonts=true but without the texlive feature (should warn, not fail)",
+            "options": {
+                "texliveFonts": true
+            }
+        }
+    ]
+}

@@ -1,0 +1,39 @@
+{
+    "id": "lilypond",
+    "version": "1.0.0",
+    "name": "LilyPond",
+    "description": "Installs LilyPond (music engraving program) from the official precompiled package on x86_64 Debian/Ubuntu and Red Hat/Fedora based systems, or via the system package manager on Alpine or non-x86_64 architectures.",
+    "documentationURL": "https://github.com/AISCGre-BR/devcontainer-features",
+    "licenseURL": "https://github.com/AISCGre-BR/devcontainer-features/blob/main/LICENSE",
+    "keywords": [
+        "lilypond",
+        "music",
+        "engraving",
+        "notation",
+        "typesetting"
+    ],
+    "options": {
+        "version": {
+            "type": "string",
+            "default": "2.26.0",
+            "description": "LilyPond version to install from the official precompiled package (e.g. '2.26.0', '2.24.4'). Ignored when installing via the system package manager (Alpine or non-x86_64 architectures).",
+            "proposals": [
+                "2.26.0",
+                "2.24.4",
+                "2.24.3",
+                "2.24.2",
+                "2.24.1",
+                "2.24.0"
+            ]
+        },
+        "texliveFonts": {
+            "type": "boolean",
+            "default": false,
+            "description": "When true, registers the fonts installed by the 'texlive' feature with fontconfig so LilyPond can use them for text rendering."
+        }
+    },
+    "installsAfter": [
+        "ghcr.io/devcontainers/features/common-utils",
+        "ghcr.io/aiscgre-br/devcontainer-features/texlive"
+    ]
+}

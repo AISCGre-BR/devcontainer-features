@@ -20,16 +20,27 @@ jobs:
     continue-on-error: true
     strategy:
       matrix:
-        features:
+        feature:
           - texlive
           - gregorio
+          - gregorio-lsp
+          - tree-sitter-gregorio
+          - lilypond
+          - pandoc
+        image:
+          - ubuntu:22.04
+        include:
+          # LilyPond on Alpine exercises the source-build path (official binary
+          # requires glibc; Alpine uses musl). All other features are only
+          # tested against ubuntu:22.04 in CI.
+          - feature: lilypond
+            image: alpine:3.21
 
     steps:
       - uses: actions/checkout@v4
 
-      - name: Test Features
-        uses: devcontainers/action@v1
-        with:
-          features-namespace: aiscgre-br/devcontainer-features
-          base-path-to-features: ./src
-          test-features: true
+      - name: Install devcontainer CLI
+        run: npm install -g @devcontainers/cli
+
+      - name: Test ${{ matrix.feature }} on ${{ matrix.image }}
+        run: devcontainer features test -f ${{ matrix.feature }} -i ${{ matrix.image }} .

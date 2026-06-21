@@ -2,7 +2,7 @@
     "scenarios": [
         {
             "id": "tree_sitter_gregorio_skipped",
-            "description": "No ref specified — skip tree-sitter-gregorio installation",
+            "description": "No ref specified — install tree-sitter-gregorio from the HEAD of the default branch",
             "options": {}
         },
         {

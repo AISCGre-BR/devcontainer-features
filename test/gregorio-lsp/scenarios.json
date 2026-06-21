@@ -2,7 +2,7 @@
     "scenarios": [
         {
             "id": "gregorio_lsp_skipped",
-            "description": "No ref specified — skip gregorio-lsp installation",
+            "description": "No ref specified — install gregorio-lsp from the HEAD of the default branch",
             "options": {}
         },
         {
