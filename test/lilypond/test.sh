@@ -12,18 +12,16 @@ check "lilypond --version reports LilyPond" \
 
 # ---------------------------------------------------------------------------
 # Versioned install prefix (/opt/lilypond/<version>)
-# Applicable when installing from the official precompiled binary (x86_64) or
-# from source (Alpine). Not applicable for the distro-package fallback path.
+# All supported paths (official binary on x86_64, source build on Alpine and
+# other architectures) install under /opt/lilypond/<version>.
 # ---------------------------------------------------------------------------
 INSTALLED_VERSION="$(lilypond --version 2>/dev/null | awk 'NR==1{print $3}')"
 
-if [ -f /etc/alpine-release ] || [ "$(uname -m)" = "x86_64" ]; then
-    check "versioned prefix /opt/lilypond/${INSTALLED_VERSION} exists" \
-        test -d "/opt/lilypond/${INSTALLED_VERSION}"
+check "versioned prefix /opt/lilypond/${INSTALLED_VERSION} exists" \
+    test -d "/opt/lilypond/${INSTALLED_VERSION}"
 
-    check "lilypond symlink resolves into /opt/lilypond" \
-        bash -c "readlink -f \"\$(command -v lilypond)\" | grep -qF '/opt/lilypond/'"
-fi
+check "lilypond symlink resolves into /opt/lilypond" \
+    bash -c "readlink -f \"\$(command -v lilypond)\" | grep -qF '/opt/lilypond/'"
 
 # ---------------------------------------------------------------------------
 # End-to-end compilation
@@ -49,9 +47,11 @@ check "09-texlive-fonts.conf absent when texlive is not installed" \
     bash -c "! test -f /etc/fonts/conf.d/09-texlive-fonts.conf"
 
 # ---------------------------------------------------------------------------
-# Build-only packages removed (Alpine source-build path only)
+# Build-only packages removed after source build
+# Applies to Alpine and to non-x86_64 glibc systems (ARM64, etc.).
+# On x86_64 the official binary is used, so these tools are never installed.
 # ---------------------------------------------------------------------------
-if [ -f /etc/alpine-release ]; then
+if [ -f /etc/alpine-release ] || [ "$(uname -m)" != "x86_64" ]; then
     check "g++ removed after build" bash -c "! command -v g++"
     check "bison removed after build" bash -c "! command -v bison"
     check "flex removed after build" bash -c "! command -v flex"
