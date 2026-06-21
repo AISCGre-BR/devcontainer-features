@@ -14,5 +14,15 @@
                 "texliveFonts": true
             }
         }
+    },
+    "alpine_source_build_with_texlive": {
+        "image": "alpine:3.21",
+        "features": {
+            "texlive": {
+                "scheme": "minimal",
+                "packages": "metapost"
+            },
+            "lilypond": {}
+        }
     }
 }

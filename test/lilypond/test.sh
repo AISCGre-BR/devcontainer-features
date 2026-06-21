@@ -41,11 +41,11 @@ check "lilypond compiles a minimal score to PDF" \
 
 # ---------------------------------------------------------------------------
 # TeX Live font integration
-# In all scenarios in this test suite, the texlive feature is NOT installed.
-# Even when texliveFonts=true (install_texlive_fonts_no_texlive scenario), the
-# install script should warn and exit cleanly without creating the conf file.
+# The 09-texlive-fonts.conf file is only written when texliveFonts=true AND
+# the texlive feature is present. In all current scenarios, texliveFonts is
+# false (default), so the file should never be created.
 # ---------------------------------------------------------------------------
-check "09-texlive-fonts.conf absent when texlive is not installed" \
+check "09-texlive-fonts.conf absent (texliveFonts not enabled)" \
     bash -c "! test -f /etc/fonts/conf.d/09-texlive-fonts.conf"
 
 # ---------------------------------------------------------------------------
