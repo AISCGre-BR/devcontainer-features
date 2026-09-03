@@ -23,6 +23,7 @@ set -euo pipefail
 
 BUILD_DIR="$(mktemp -d)"
 _BUILD_PKGS_TO_REMOVE=()
+DEFERRED_GTEX_DIR="/usr/local/share/gregorio-gtex-src"
 
 cleanup() {
     rm -rf "${BUILD_DIR}"
@@ -298,15 +299,34 @@ install_gregorio() {
     # script. Without this step, kpsewhich cannot find gregoriotex and lualatex
     # compilation will fail.
     #
-    # Skip when TeX Live is not present (e.g. standalone CI tests): the binary
-    # is still usable; the TeX support files can be installed later by running
-    # install-gtex.sh manually after installing the texlive feature.
+    # kpsewhich comes from the 'texlive' feature. installsAfter declares that
+    # dependency, but some devcontainer runtimes (confirmed for Zed/podman,
+    # see 42be3ca) don't honor installsAfter, so texlive may not be present
+    # yet at this point even when it's listed first in devcontainer.json.
+    #
+    # When kpsewhich is missing, defer the TeX support file install: stash
+    # the source tree (install-gtex.sh plus the files it copies) under
+    # DEFERRED_GTEX_DIR and let postCreateCommand (declared in
+    # devcontainer-feature.json) finish the job once the container is
+    # actually running, by which point every feature has finished building
+    # regardless of build-time ordering.
     if command -v kpsewhich >/dev/null 2>&1; then
         echo "Installing GregorioTeX TeX support files..."
         ( cd "${src_dir}" && SKIP="docs,examples,font-sources" AUTO_UNINSTALL=true bash ./install-gtex.sh system )
     else
-        echo "WARNING: kpsewhich not found; skipping GregorioTeX TeX support file installation." >&2
-        echo "         Install the 'texlive' feature first, then run install-gtex.sh manually." >&2
+        echo "WARNING: kpsewhich not found; deferring GregorioTeX TeX support file" >&2
+        echo "         installation to first container start (postCreateCommand)." >&2
+        rm -rf "${DEFERRED_GTEX_DIR}"
+        mkdir -p "$(dirname "${DEFERRED_GTEX_DIR}")"
+        cp -a "${src_dir}" "${DEFERRED_GTEX_DIR}"
+        cat > "${DEFERRED_GTEX_DIR}/_run.sh" <<'DEFERRED_GTEX_EOF'
+#!/bin/sh
+set -e
+dir="$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)"
+cd "${dir}"
+SKIP="docs,examples,font-sources" AUTO_UNINSTALL=true bash ./install-gtex.sh system
+DEFERRED_GTEX_EOF
+        chmod +x "${DEFERRED_GTEX_DIR}/_run.sh"
     fi
 
     echo "Gregorio ${display_ref} installed."
