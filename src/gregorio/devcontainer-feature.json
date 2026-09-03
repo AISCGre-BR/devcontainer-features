@@ -1,6 +1,6 @@
 {
     "id": "gregorio",
-    "version": "2.0.10",
+    "version": "2.0.11",
     "name": "Gregorio",
     "description": "Installs Gregorio (Gregorian chant score engraver) from source on Debian/Ubuntu, Red Hat/Fedora, or Alpine based systems.",
     "documentationURL": "https://github.com/AISCGre-BR/devcontainer-features",
@@ -44,8 +44,5 @@
     "installsAfter": [
         "ghcr.io/devcontainers/features/common-utils",
         "ghcr.io/aiscgre-br/devcontainer-features/texlive"
-    ],
-    "postCreateCommand": {
-        "gregorio-install-gtex": "sh -c 'if [ -x /usr/local/share/gregorio-gtex-src/_run.sh ] && command -v kpsewhich >/dev/null 2>&1; then if command -v sudo >/dev/null 2>&1; then sudo /usr/local/share/gregorio-gtex-src/_run.sh && sudo rm -rf /usr/local/share/gregorio-gtex-src; else /usr/local/share/gregorio-gtex-src/_run.sh && rm -rf /usr/local/share/gregorio-gtex-src; fi; fi'"
-    }
+    ]
 }

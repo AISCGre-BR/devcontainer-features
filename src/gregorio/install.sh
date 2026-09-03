@@ -23,7 +23,6 @@ set -euo pipefail
 
 BUILD_DIR="$(mktemp -d)"
 _BUILD_PKGS_TO_REMOVE=()
-DEFERRED_GTEX_DIR="/usr/local/share/gregorio-gtex-src"
 
 cleanup() {
     rm -rf "${BUILD_DIR}"
@@ -304,29 +303,32 @@ install_gregorio() {
     # see 42be3ca) don't honor installsAfter, so texlive may not be present
     # yet at this point even when it's listed first in devcontainer.json.
     #
-    # When kpsewhich is missing, defer the TeX support file install: stash
-    # the source tree (install-gtex.sh plus the files it copies) under
-    # DEFERRED_GTEX_DIR and let postCreateCommand (declared in
-    # devcontainer-feature.json) finish the job once the container is
-    # actually running, by which point every feature has finished building
-    # regardless of build-time ordering.
+    # A previous version of this script deferred the install to a
+    # postCreateCommand declared in devcontainer-feature.json, to run once
+    # every feature had finished building. That doesn't work under Zed: it
+    # doesn't execute feature-contributed lifecycle commands at all (verified
+    # by inspecting a running container: the deferred install was still
+    # sitting untouched, texmf-local empty). Lifecycle hooks can't be relied
+    # on, so install unconditionally at build time instead:
+    #
+    # - kpsewhich present: normal path, install via "system" (kpsewhich
+    #   resolves TEXMFLOCAL) with a real texhash.
+    # - kpsewhich missing: our own texlive feature always uses a fixed
+    #   TEXMFLOCAL of /opt/texlive/texmf-local (see TEXLIVE_PREFIX in
+    #   src/texlive/install.sh), regardless of build order, so target that
+    #   path directly ("dir:" mode, no kpsewhich needed) and skip texhash
+    #   (not available yet, and install-gtex.sh's die() on texhash failure
+    #   would uninstall everything it just copied). ls-R will be stale, but
+    #   kpathsea falls back to scanning the filesystem for files missing
+    #   from ls-R, so lookups still succeed -- just slightly slower until
+    #   the next texhash run.
     if command -v kpsewhich >/dev/null 2>&1; then
         echo "Installing GregorioTeX TeX support files..."
         ( cd "${src_dir}" && SKIP="docs,examples,font-sources" AUTO_UNINSTALL=true bash ./install-gtex.sh system )
     else
-        echo "WARNING: kpsewhich not found; deferring GregorioTeX TeX support file" >&2
-        echo "         installation to first container start (postCreateCommand)." >&2
-        rm -rf "${DEFERRED_GTEX_DIR}"
-        mkdir -p "$(dirname "${DEFERRED_GTEX_DIR}")"
-        cp -a "${src_dir}" "${DEFERRED_GTEX_DIR}"
-        cat > "${DEFERRED_GTEX_DIR}/_run.sh" <<'DEFERRED_GTEX_EOF'
-#!/bin/sh
-set -e
-dir="$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)"
-cd "${dir}"
-SKIP="docs,examples,font-sources" AUTO_UNINSTALL=true bash ./install-gtex.sh system
-DEFERRED_GTEX_EOF
-        chmod +x "${DEFERRED_GTEX_DIR}/_run.sh"
+        echo "WARNING: kpsewhich not found; installing GregorioTeX TeX support" >&2
+        echo "         files directly into /opt/texlive/texmf-local (texhash skipped)." >&2
+        ( cd "${src_dir}" && SKIP="docs,examples,font-sources" AUTO_UNINSTALL=true TEXHASH=true bash ./install-gtex.sh dir:/opt/texlive/texmf-local )
     fi
 
     echo "Gregorio ${display_ref} installed."
